@@ -16,9 +16,11 @@ cjks* cjks_parse(cjks_io* io, const char* password, size_t len) {
         chain->ts = cjks_io_read_be8(io);
 
         if (tag == CJKS_PRIVATE_KEY_TAG) {
-            if (cjks_parse_pk(io, &chain->entry.pk) > 0) {
-                cjks_decrypt_pk(&chain->entry.pk, password, len);
+            if (cjks_parse_pk(io, &chain->entry.pk) < 0) {
+                perror("Failed to parse jks");
+                break;
             }
+            cjks_decrypt_pk(&chain->entry.pk, password, len);
         }
         else if (tag == CJKS_TRUSTED_CERT_TAG) {
             if (cjks_parse_ca(io, &chain->entry.ca) < 0) {

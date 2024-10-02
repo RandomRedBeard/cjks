@@ -30,8 +30,9 @@ int cjks_b64encode(unsigned char *dest, const unsigned char *src, size_t len) {
     }
     dptr += dlen;
     EVP_EncodeFinal(ctx, dptr, &dlen);
+    dptr += dlen;
     EVP_ENCODE_CTX_free(ctx);
-    return (int)(dptr + dlen - dest);
+    return (int)(dptr - dest);
 }
 
 char cjks_v2a(int c) {
