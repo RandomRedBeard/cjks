@@ -36,6 +36,7 @@ typedef struct cjks_entry_st {
 } cjks;
 
 CJKS_DLL cjks* cjks_parse(cjks_io* io, const char* password, size_t len);
+CJKS_DLL cjks* cjks_get(cjks* jks, const char* alias);
 CJKS_DLL cjks *cjks_new(int tag);
 CJKS_DLL cjks_ca *cjks_ca_new();
 CJKS_DLL cjks_ca* cjks_parse_ca(cjks_io* io, cjks_ca* ca);

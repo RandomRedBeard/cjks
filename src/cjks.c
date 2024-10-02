@@ -33,6 +33,16 @@ cjks* cjks_parse(cjks_io* io, const char* password, size_t len) {
     return root;
 }
 
+cjks* cjks_get(cjks* jks, const char* alias) {
+    while (jks) {
+        if (strcmp(jks->alias, alias) == 0) {
+            return jks;
+        }
+        jks = jks->next;
+    }
+    return NULL;
+}
+
 cjks *cjks_new(int tag) {
     cjks *e = calloc(1, sizeof(cjks));
     e->tag = tag;
