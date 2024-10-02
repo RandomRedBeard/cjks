@@ -18,7 +18,7 @@ target_compile_definitions(cjks PRIVATE CJKS_DLL_EXPORT)
 if (MSVC)
     target_compile_options(cjks PRIVATE /W4)
 else()
-    target_compile_options(cjks PRIVATE -Wall -Wextra -pedantic -Werror -ansi)
+    target_compile_options(cjks PRIVATE -Wall -Wextra -pedantic -ansi)
 endif()
 
 find_package(Iconv REQUIRED)
