@@ -14,7 +14,7 @@
 #define CJKS_PRIVATE_KEY_TAG 1
 #define CJKS_TRUSTED_CERT_TAG 2
 
-static const char cjks_jks_magic_number[] = {'\xFE', '\xED', '\xFE', '\xED'};
+static const char cjks_jks_magic_number[] = "\xFE\xED\xFE\xED";
 
 typedef struct cjks_ca_st {
     char *cert_type;
