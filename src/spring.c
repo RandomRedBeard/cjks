@@ -49,7 +49,7 @@ int cjks_spring_decrypt(EVP_PKEY *pkey, unsigned char *str, size_t len) {
     EVP_PKEY_CTX_free(evp_ctx);
     EVP_CIPHER_CTX_free(cipher);
 
-    return 0;
+    return (int)(dstr - str);
 
 error:
     ERR_print_errors_fp(stdout);

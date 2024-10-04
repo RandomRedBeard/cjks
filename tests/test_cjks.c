@@ -4,7 +4,13 @@
 #include "test_base.h"
 
 void test_load() {
-    FILE* fp = fopen("keystore", "rb");
+#ifndef CJKS_RES_DIR
+#define CJKS_RES_DIR "resources"
+#endif
+    char ksp[128];
+    memcpy(ksp, CJKS_RES_DIR, strlen(CJKS_RES_DIR) + 1);
+    strcat(ksp, "/keystore");
+    FILE* fp = fopen(ksp, "rb");
     assert(fp);
     cjks_io* io = cjks_io_fs_new(fp);
 
@@ -34,8 +40,12 @@ void test_load() {
     assert(mk->tag == CJKS_PRIVATE_KEY_TAG);
     assert(mk->entry.pk.key.len > 0);
 
+    char kp[128];
+    memcpy(kp, CJKS_RES_DIR, strlen(CJKS_RES_DIR) + 1);
+    strcat(kp, "/d.key");
+
     cjks_buf dkey = CJKS_BUF_INIT;
-    cjks_io_read_all("d.key", &dkey);
+    cjks_io_read_all(kp, &dkey);
 
     unsigned char* mk_key = malloc(2048);
     int mk_key_len = cjks_b64encode(mk_key, mk->entry.pk.key.buf, mk->entry.pk.key.len);

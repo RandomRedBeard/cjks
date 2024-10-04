@@ -46,6 +46,8 @@ set_target_properties(cjks
     PUBLIC_HEADER "${CJKS_HEADERS}"
 )
 
+set(CJKS_RES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/resources)
+
 file(GLOB files tests/*.c)
 foreach(file ${files})
     get_filename_component(tname ${file} NAME_WLE)
@@ -56,6 +58,7 @@ foreach(file ${files})
             ${CJKS_PUB_LINKS}
             ${CJKS_PRIV_LINKS}
     )
+    target_compile_definitions(${tname} PRIVATE CJKS_RES_DIR="${CJKS_RES_DIR}")
     add_test(NAME ${tname} COMMAND ${tname})
 endforeach()
 
