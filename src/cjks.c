@@ -4,6 +4,11 @@ cjks* cjks_parse(cjks_io* io, const char* password, size_t len) {
     char header[4];
     cjks_io_read(io, header, 4);
 
+    // Not magic header
+    if (memcmp(cjks_jks_magic_number, header, 4) != 0) {
+        return NULL;
+    }
+
     unsigned int version = cjks_io_read_be4(io);
     unsigned int entry_count = cjks_io_read_be4(io);
 

@@ -58,3 +58,4 @@ dkms.conf
 *.py
 *build
 *.sh
+notes

@@ -1,6 +1,8 @@
 #ifndef CJKS_H
 #define CJKS_H
 
+#include <string.h>
+
 #include <openssl/err.h>
 #include <openssl/pkcs12.h>
 
@@ -11,6 +13,8 @@
 
 #define CJKS_PRIVATE_KEY_TAG 1
 #define CJKS_TRUSTED_CERT_TAG 2
+
+static const char cjks_jks_magic_number[] = {'\xFE', '\xED', '\xFE', '\xED'};
 
 typedef struct cjks_ca_st {
     char *cert_type;
