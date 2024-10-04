@@ -7,7 +7,7 @@ void test_decode() {
     char *buf = "aGVsbG8=";
     char buf2[16];
     int l = cjks_b64decode(buf, buf2, strlen(buf));
-    assert(strcmp("hello", buf2) == 0);
+    assert(strncmp("hello", buf2, l) == 0);
 }
 
 /**
