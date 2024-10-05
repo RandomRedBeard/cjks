@@ -14,7 +14,6 @@ void test_decrypt() {
     cjks_io_read_all(kp, &pk_buf);
     pk_buf.len = cjks_b64decode(pk_buf.buf, pk_buf.buf, pk_buf.len);
 
-
     assert(pk_buf.len != 0);
 
     char est[128];
