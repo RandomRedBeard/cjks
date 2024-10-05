@@ -32,6 +32,8 @@ void test_decrypt() {
 
     int i = cjks_spring_decrypt(pk, es_buf.buf, es_buf.len);
     assert(strncmp("asd", es_buf.buf, i) == 0);
+
+    EVP_PKEY_free(pk);
 }
 
 test_st tests[] = {

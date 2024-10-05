@@ -176,14 +176,16 @@ void cjks_keystream(unsigned char *cur, const char *password, size_t plen) {
 
 int cjks_decrypt_pk(cjks_pkey* pk, const char* password, size_t len) {
     ASN1_TYPE* ber = NULL;
+    ASN1_OCTET_STRING* ber_s = NULL;
     cjks_parse_eber(&pk->encrypted_ber, &ber);
+    ber_s = ber->value.octet_string;
 
     unsigned char cur[SHA_DIGEST_LENGTH], *cptr = cur;
     memcpy(cur, ber->value.octet_string->data, SHA_DIGEST_LENGTH);
 
     // 20 bytes for iv in front, 20 for hash in back
     unsigned char *pkey_buf = malloc(ber->value.octet_string->length - 40), *pkey_ptr = pkey_buf;
-    unsigned char *pkey_end = ber->value.octet_string->data + ber->value.octet_string->length - 20, *dptr = (unsigned char *)ber->value.octet_string->data + 20;
+    unsigned char *pkey_end = ber_s->data + ber_s->length - 20, *dptr = ber_s->data + 20;
     cjks_keystream(cur, password, len);
 
     while (dptr != pkey_end) {
@@ -196,7 +198,7 @@ int cjks_decrypt_pk(cjks_pkey* pk, const char* password, size_t len) {
     }
 
     pk->key.buf = pkey_buf;
-    pk->key.len = ber->value.octet_string->length - 40;
+    pk->key.len = ber_s->length - 40;
 
     ASN1_TYPE_free(ber);
 
