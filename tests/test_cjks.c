@@ -11,19 +11,8 @@ void test_load() {
     assert(fp);
     cjks_io* io = cjks_io_fs_new(fp);
 
-    char password[] = "changeit", * ptr = password;
-    char utf16_password[32], * utf16_ptr = utf16_password;
-
-    size_t pwdlen = sizeof(password) - 1;
-    size_t utf_len = sizeof(utf16_password);
-
-    iconv_t cnv = iconv_open("UTF-16BE", "US-ASCII");
-    iconv(cnv, NULL, NULL, &utf16_ptr, &utf_len);
-    iconv(cnv, &ptr, &pwdlen, &utf16_ptr, &utf_len);
-    iconv_close(cnv);
-
     unsigned int cnt = 0;
-    cjks* jks = cjks_parse(io, utf16_password, utf_len), *jptr = jks;
+    cjks* jks = cjks_parse_ex(io, "changeit", sizeof("changeit") - 1, "US-ASCII"), *jptr = jks;
     while (jptr) {
         printf("%d - %s\n", jptr->tag, jptr->alias);
         jptr = jptr->next;

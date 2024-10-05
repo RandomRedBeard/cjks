@@ -48,6 +48,20 @@ cjks* cjks_parse(cjks_io* io, const char* password, size_t len) {
     return root;
 }
 
+cjks* cjks_parse_ex(cjks_io* io, const char* password, size_t len, const char* encoding) {
+    char epwd[128], *ptr = epwd;
+    size_t epwd_len = 128;
+    
+    iconv_t cnv = iconv_open("UTF-16BE", encoding);
+    iconv(cnv, NULL, NULL, &ptr, &epwd_len);
+    iconv(cnv, &password, &len, &ptr, &epwd_len);
+    iconv_close(cnv);
+
+    epwd_len = sizeof(epwd) - epwd_len;
+
+    return cjks_parse(io, epwd, epwd_len);
+}
+
 cjks* cjks_get(cjks* jks, const char* alias) {
     while (jks) {
         if (strcmp(jks->alias, alias) == 0) {
