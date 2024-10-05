@@ -10,6 +10,12 @@ cjks* cjks_parse(cjks_io* io, const char* password, size_t len) {
     }
 
     unsigned int version = cjks_io_read_be4(io);
+
+    // Only supporting v2
+    if (version != 2) {
+        return NULL;
+    }
+
     unsigned int entry_count = cjks_io_read_be4(io);
 
     cjks *root = NULL, *chain = NULL;
@@ -21,14 +27,16 @@ cjks* cjks_parse(cjks_io* io, const char* password, size_t len) {
         chain->ts = cjks_io_read_be8(io);
 
         if (tag == CJKS_PRIVATE_KEY_TAG) {
-            if (cjks_parse_pk(io, &chain->entry.pk) < 0) {
+            chain->entry.pk = cjks_pk_new();
+            if (cjks_parse_pk(io, chain->entry.pk) < 0) {
                 perror("Failed to parse jks");
                 break;
             }
-            cjks_decrypt_pk(&chain->entry.pk, password, len);
+            cjks_decrypt_pk(chain->entry.pk, password, len);
         }
         else if (tag == CJKS_TRUSTED_CERT_TAG) {
-            if (cjks_parse_ca(io, &chain->entry.ca) < 0) {
+            chain->entry.ca = cjks_ca_new();
+            if (cjks_parse_ca(io, chain->entry.ca) < 0) {
                 perror("Failed to parse jks");
                 break;
             }
@@ -56,14 +64,54 @@ cjks *cjks_new(int tag) {
     return e;
 }
 
+void cjks_free(cjks* jks) {
+    cjks* n;
+    do {
+        n = jks->next;
+        free(jks->alias);
+        switch(jks->tag) {
+        case CJKS_PRIVATE_KEY_TAG:
+            cjks_pk_free(jks->entry.pk);
+            break;
+        case CJKS_TRUSTED_CERT_TAG:
+            cjks_ca_free(jks->entry.ca);
+            break;
+        }
+        free(jks);
+        jks = n;
+    } while (jks);
+}
+
 cjks_ca *cjks_ca_new() {
     return calloc(1, sizeof(cjks_ca));
+}
+
+void cjks_ca_free(cjks_ca* ca) {
+    cjks_ca* n;
+    do {
+        n = ca->next;
+        free(ca->cert_type);
+        cjks_buf_clear(&ca->cert);
+        free(ca);
+        ca = n;
+    } while(ca);
 }
 
 cjks_ca* cjks_parse_ca(cjks_io* io, cjks_ca* ca) {
     ca->cert_type = cjks_io_aread_utf(io);
     cjks_io_aread_data(io, &ca->cert);
     return ca;
+}
+
+cjks_pkey* cjks_pk_new() {
+    return calloc(1, sizeof(cjks_pkey));
+}
+
+void cjks_pk_free(cjks_pkey* pk) {
+    cjks_buf_clear(&pk->key);
+    cjks_buf_clear(&pk->encrypted_ber);
+    cjks_ca_free(pk->cert_chain);
+    free(pk);
 }
 
 int cjks_parse_pk(cjks_io* io, cjks_pkey* pk) {

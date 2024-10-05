@@ -38,7 +38,7 @@ void test_load() {
     cjks* mk = cjks_get(jks, "mytestkey");
     assert(mk);
     assert(mk->tag == CJKS_PRIVATE_KEY_TAG);
-    assert(mk->entry.pk.key.len > 0);
+    assert(mk->entry.pk->key.len > 0);
 
     char kp[128];
     memcpy(kp, CJKS_RES_DIR, strlen(CJKS_RES_DIR) + 1);
@@ -48,10 +48,11 @@ void test_load() {
     cjks_io_read_all(kp, &dkey);
 
     unsigned char* mk_key = malloc(2048);
-    int mk_key_len = cjks_b64encode(mk_key, mk->entry.pk.key.buf, mk->entry.pk.key.len);
+    int mk_key_len = cjks_b64encode(mk_key, mk->entry.pk->key.buf, mk->entry.pk->key.len);
 
     assert(memcmp(dkey.buf, mk_key, dkey.len) == 0);
 
+    cjks_free(jks);
 }
 
 test_st tests[] = {

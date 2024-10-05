@@ -27,6 +27,10 @@ int cjks_io_read_all(const char* path, cjks_buf* buf) {
     return 0;
 }
 
+void cjks_buf_clear(const cjks_buf* buf) {
+    free(buf->buf);
+}
+
 /**
  * IO functions
  */

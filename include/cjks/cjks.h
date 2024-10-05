@@ -33,8 +33,8 @@ typedef struct cjks_entry_st {
     char *alias;
     unsigned long long ts;
     union {
-        cjks_pkey pk;
-        cjks_ca ca;
+        cjks_pkey* pk;
+        cjks_ca* ca;
     } entry;
     struct cjks_entry_st *next;
 } cjks;
@@ -42,8 +42,12 @@ typedef struct cjks_entry_st {
 CJKS_DLL cjks* cjks_parse(cjks_io* io, const char* password, size_t len);
 CJKS_DLL cjks* cjks_get(cjks* jks, const char* alias);
 CJKS_DLL cjks *cjks_new(int tag);
+CJKS_DLL void cjks_free(cjks* jks);
 CJKS_DLL cjks_ca *cjks_ca_new();
+CJKS_DLL void cjks_ca_free(cjks_ca* ca);
 CJKS_DLL cjks_ca* cjks_parse_ca(cjks_io* io, cjks_ca* ca);
+CJKS_DLL cjks_pkey* cjks_pk_new();
+CJKS_DLL void cjks_pk_free(cjks_pkey* pk);
 CJKS_DLL int cjks_parse_pk(cjks_io* io, cjks_pkey* pk);
 CJKS_DLL int cjks_parse_eber(const cjks_buf *eber, cjks_buf *ber);
 CJKS_DLL void cjks_keystream(unsigned char *cur, const char *password, size_t plen);
