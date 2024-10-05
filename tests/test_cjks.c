@@ -4,9 +4,6 @@
 #include "test_base.h"
 
 void test_load() {
-#ifndef CJKS_RES_DIR
-#define CJKS_RES_DIR "resources"
-#endif
     char ksp[128];
     memcpy(ksp, CJKS_RES_DIR, strlen(CJKS_RES_DIR) + 1);
     strcat(ksp, "/keystore");

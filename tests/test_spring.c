@@ -1,13 +1,12 @@
 #include <stdlib.h>
 #include <string.h>
+#include <iconv.h>
 #include <cjks/io.h>
 #include <cjks/spring.h>
+#include <cjks/cjks.h>
 #include "test_base.h"
 
 void test_decrypt() {
-#ifndef CJKS_RES_DIR
-#define CJKS_RES_DIR "resources"
-#endif
     char kp[128];
     memcpy(kp, CJKS_RES_DIR, strlen(CJKS_RES_DIR) + 1);
     strcat(kp, "/d.key");
@@ -38,8 +37,52 @@ void test_decrypt() {
     cjks_buf_clear(&es_buf);
 }
 
+void test_jks_decrypt() {
+    char kp[128];
+    memcpy(kp, CJKS_RES_DIR, strlen(CJKS_RES_DIR) + 1);
+    strcat(kp, "/keystore");
+
+    char est[128];
+    memcpy(est, CJKS_RES_DIR, strlen(CJKS_RES_DIR) + 1);
+    strcat(est, "/estring");
+    cjks_buf es_buf;
+    cjks_io_read_all(est, &es_buf);
+
+    FILE* fp = fopen(kp, "rb");
+    assert(fp);
+
+    char password[] = "changeit", * ptr = password;
+    char utf16_password[32], * utf16_ptr = utf16_password;
+
+    size_t pwdlen = sizeof(password) - 1;
+    size_t utf_len = sizeof(utf16_password);
+
+    iconv_t cnv = iconv_open("UTF-16BE", "US-ASCII");
+    iconv(cnv, NULL, NULL, &utf16_ptr, &utf_len);
+    iconv(cnv, &ptr, &pwdlen, &utf16_ptr, &utf_len);
+    iconv_close(cnv);
+
+    cjks_io* io = cjks_io_fs_new(fp);
+    cjks* jks = cjks_parse(io, utf16_password, utf_len);
+    assert(jks);
+    cjks* mk = cjks_get(jks, "mytestkey");
+    assert(mk && mk->tag == CJKS_PRIVATE_KEY_TAG);
+
+    EVP_PKEY* pk = cjks_2evp(mk->entry.pk);
+    int i = cjks_spring_decrypt(pk, es_buf.buf, es_buf.len);
+    assert(strncmp("asd", es_buf.buf, i) == 0);
+
+    fclose(fp);
+    EVP_PKEY_free(pk);
+    cjks_buf_clear(&es_buf);
+    cjks_io_fs_free(io);
+    cjks_free(jks);
+    
+}
+
 test_st tests[] = {
     {"decrypt", test_decrypt},
+    {"decrypt_from_jks", test_jks_decrypt},
     {NULL, NULL}
 };
 

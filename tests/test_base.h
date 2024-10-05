@@ -5,6 +5,10 @@
 #undef NDEBUG
 #endif
 
+#ifndef CJKS_RES_DIR
+#define CJKS_RES_DIR "resources"
+#endif
+
 #include <assert.h>
 #include <stdio.h>
 
