@@ -16,7 +16,6 @@ typedef struct cjks_buf_st {
 
 #define CJKS_BUF_INIT {0, 0}
 
-CJKS_DLL int cjks_buf_dup(cjks_buf *io, const void *buf, size_t len);
 CJKS_DLL int cjks_io_read_all(const char* path, cjks_buf* buf);
 CJKS_DLL void cjks_buf_clear(const cjks_buf* buf);
 

@@ -3,14 +3,6 @@
 /**
  * BUF functions
  */
-
-int cjks_buf_dup(cjks_buf *io, const void *buf, size_t len) {
-    io->len = len;
-    io->buf = malloc(io->len);
-    memcpy(io->buf, buf, io->len);
-    return 0;
-}
-
 int cjks_io_read_all(const char* path, cjks_buf* buf) {
     FILE *fp = fopen(path, "rb");
     if (!fp) {
