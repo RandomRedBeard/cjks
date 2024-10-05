@@ -34,6 +34,8 @@ void test_decrypt() {
     assert(strncmp("asd", es_buf.buf, i) == 0);
 
     EVP_PKEY_free(pk);
+    cjks_buf_clear(&pk_buf);
+    cjks_buf_clear(&es_buf);
 }
 
 test_st tests[] = {
