@@ -52,6 +52,7 @@ void test_load() {
 
     assert(memcmp(dkey.buf, mk_key, dkey.len) == 0);
 
+    fclose(fp);
     cjks_io_fs_free(io);
     cjks_buf_clear(&dkey);
     cjks_free(jks);
