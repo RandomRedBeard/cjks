@@ -55,9 +55,7 @@ cjks* cjks_parse_ex(cjks_io* io, const char* password, size_t len, const char* e
     iconv_t cnv = iconv_open("UTF-16BE", encoding);
     iconv(cnv, NULL, NULL, &ptr, &epwd_len);
     if (iconv(cnv, &password, &len, &ptr, &epwd_len) == (size_t) -1) {
-        if (errno == E2BIG) {
-            return NULL;
-        }
+        return NULL;
     }
     iconv_close(cnv);
 
