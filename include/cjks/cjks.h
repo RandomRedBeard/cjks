@@ -48,7 +48,7 @@ CJKS_DLL cjks *cjks_new(int tag);
 CJKS_DLL void cjks_free(cjks* jks);
 CJKS_DLL cjks_ca *cjks_ca_new();
 CJKS_DLL void cjks_ca_free(cjks_ca* ca);
-CJKS_DLL cjks_ca* cjks_parse_ca(cjks_io* io, cjks_ca* ca);
+CJKS_DLL int cjks_parse_ca(cjks_io* io, cjks_ca* ca);
 CJKS_DLL cjks_pkey* cjks_pk_new();
 CJKS_DLL void cjks_pk_free(cjks_pkey* pk);
 CJKS_DLL int cjks_parse_pk(cjks_io* io, cjks_pkey* pk);

@@ -114,10 +114,10 @@ void cjks_ca_free(cjks_ca* ca) {
     } while(ca);
 }
 
-cjks_ca* cjks_parse_ca(cjks_io* io, cjks_ca* ca) {
+int cjks_parse_ca(cjks_io* io, cjks_ca* ca) {
     ca->cert_type = cjks_io_aread_utf(io);
     cjks_io_aread_data(io, &ca->cert);
-    return ca;
+    return 0;
 }
 
 cjks_pkey* cjks_pk_new() {
