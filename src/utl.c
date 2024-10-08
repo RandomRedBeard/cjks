@@ -40,7 +40,7 @@ char cjks_v2a(int c) {
 }
 
 int cjks_hex(char *dest, const unsigned char *src, size_t len) {
-    for (int i = 0; i < len; i++) {
+    for (size_t i = 0; i < len; i++) {
         *dest++ = cjks_v2a((src[i] >> 4) & 0x0F);
         *dest++ = cjks_v2a((src[i]) & 0x0F);
     }
