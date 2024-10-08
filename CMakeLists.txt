@@ -24,7 +24,7 @@ else()
 endif()
 
 if (MSVC)
-    target_compile_options(cjks PRIVATE /W4 /Za)
+    target_compile_options(cjks PRIVATE /W4)
 else()
     target_compile_options(cjks PRIVATE -Wall -Wextra -pedantic)
 endif()
@@ -34,7 +34,7 @@ find_package(OpenSSL REQUIRED)
 
 set(CJKS_LINKS Iconv::Iconv OpenSSL::Crypto)
 if (MSVC)
-    set(CJKS_LINKS ${CJKS_LINKS} OpenSSL::applink)
+    set(CJKS_LINKS ${CJKS_LINKS} OpenSSL::applink ws2_32)
 endif()
 
 target_link_libraries(cjks 

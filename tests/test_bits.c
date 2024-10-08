@@ -2,6 +2,21 @@
 #include <cjks/io.h>
 #include "test_base.h"
 
+void test_cjks_ntohs() {
+    char buf[] = { 0x0, 0x1 };
+    assert(cjks_ntohs(buf) == 1);
+}
+
+void test_cjks_ntohi() {
+    char buf[] = { 0x0, 0x0, 0x0, 0x1 };
+    assert(cjks_ntohi(buf) == 1);
+}
+
+void test_cjks_ntohll() {
+    char buf[] = { 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x1 };
+    assert(cjks_ntohll(buf) == 1);
+}
+
 void test_read_be2() {
     char buf[] = { 0x0, 0x1 };
     cjks_io *io = cjks_io_mem_new(buf, 2);
@@ -27,6 +42,9 @@ void test_read_be8() {
 }
 
 test_st tests[] = {
+    {"ntohs", test_cjks_ntohs},
+    {"ntohi", test_cjks_ntohi},
+    {"ntohl", test_cjks_ntohll},
     {"be2", test_read_be2},
     {"be4", test_read_be4},
     {"be8", test_read_be8},
