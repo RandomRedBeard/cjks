@@ -48,7 +48,7 @@ cjks* cjks_parse(cjks_io* io, const char* password, size_t len) {
     return root;
 }
 
-cjks* cjks_parse_ex(cjks_io* io, const char* password, size_t len, const char* encoding) {
+cjks* cjks_parse_ex(cjks_io* io, char* password, size_t len, const char* encoding) {
     char epwd[128], *ptr = epwd;
     size_t epwd_len = 128;
     

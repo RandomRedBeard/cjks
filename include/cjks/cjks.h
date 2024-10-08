@@ -42,7 +42,7 @@ typedef struct cjks_entry_st {
 } cjks;
 
 CJKS_DLL cjks* cjks_parse(cjks_io* io, const char* password, size_t len);
-CJKS_DLL cjks* cjks_parse_ex(cjks_io* io, const char* password, size_t len, const char* encoding);
+CJKS_DLL cjks* cjks_parse_ex(cjks_io* io, char* password, size_t len, const char* encoding);
 CJKS_DLL cjks* cjks_get(cjks* jks, const char* alias);
 CJKS_DLL cjks *cjks_new(int tag);
 CJKS_DLL void cjks_free(cjks* jks);
