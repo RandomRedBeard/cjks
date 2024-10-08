@@ -3,8 +3,11 @@ project(cjks C)
 
 include(GNUInstallDirs)
 include(CTest)
+include(CheckIncludeFile)
 find_program(MEMORYCHECK_COMMAND valgrind)
 set(MEMORYCHECK_COMMAND_OPTIONS "--leak-check=full --show-leak-kinds=all")
+
+CHECK_INCLUDE_FILE("endian.h" HAS_ENDIAN_H)
 
 find_program(KEYTOOL_COMMAND keytool)
 
@@ -15,6 +18,10 @@ if (${CJKS_STATIC})
     add_library(cjks STATIC ${CJKS_SOURCE})
 else()
     add_library(cjks SHARED ${CJKS_SOURCE})
+endif()
+
+if (${HAS_ENDIAN_H})
+    target_compile_definitions(cjks PUBLIC HAS_ENDIAN_H)
 endif()
 
 if (${CJKS_STATIC})
