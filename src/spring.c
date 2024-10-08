@@ -14,7 +14,7 @@ int cjks_spring_decrypt(EVP_PKEY *pkey, unsigned char *str, size_t len) {
     if ((dlen = cjks_b64decode(str, str, len)) < 0) {
         goto error;
     }
-    keylen = cjks_buf2be_2(strptr);
+    keylen = cjks_ntohs(strptr);
     strptr += 2;
 
     evp_ctx = EVP_PKEY_CTX_new(pkey, NULL);

@@ -48,19 +48,19 @@ int cjks_io_close(cjks_io *io) {
 unsigned short cjks_io_read_be2(cjks_io *io) {
     unsigned short s = 0;
     cjks_io_read(io, &s, sizeof(s));
-    return cjks_buf2be_2(&s);
+    return cjks_ntohs(&s);
 }
 
 unsigned int cjks_io_read_be4(cjks_io *io) {
     unsigned int i = 0;
     cjks_io_read(io, &i, sizeof(i));
-    return cjks_buf2be_4(&i);
+    return cjks_ntohi(&i);
 }
 
 unsigned long long cjks_io_read_be8(cjks_io *io) {
     unsigned long long l = 0;
     cjks_io_read(io, &l, sizeof(l));
-    return cjks_buf2be_8(&l);
+    return cjks_ntohll(&l);
 }
 
 char *cjks_io_aread_utf(cjks_io *io) {
