@@ -138,7 +138,7 @@ int cjks_parse_pk(cjks_io* io, cjks_pkey* pk) {
     cjks_ca *chain = NULL, *root = NULL;
     for (unsigned int i = 0; i < chain_len; i++) {
         chain = cjks_ca_new();
-        chain = cjks_parse_ca(io, chain);
+        cjks_parse_ca(io, chain);
         chain->next = root;
         root = chain;
     }
