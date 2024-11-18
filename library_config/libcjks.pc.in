@@ -1,0 +1,9 @@
+libdir=@CMAKE_INSTALL_FULL_LIBDIR@
+includedir=@CMAKE_INSTALL_FULL_INCLUDEDIR@
+
+Name: libcjks
+Version:
+Description:
+URL:
+Libs: -L${libdir} -lcjks
+Cflags: -I${includedir}

@@ -59,7 +59,6 @@ set_target_properties(cjks
 )
 
 set(CJKS_RES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/resources)
-
 file(GLOB files tests/*.c)
 foreach(file ${files})
     get_filename_component(tname ${file} NAME_WLE)
@@ -73,6 +72,14 @@ foreach(file ${files})
     add_test(NAME ${tname} COMMAND ${tname})
 endforeach()
 
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/library_config/libcjks.pc.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/libcjks.pc" @ONLY)
+
+install(
+    FILES "${CMAKE_CURRENT_BINARY_DIR}/libcjks.pc"
+    DESTINATION lib/pkgconfig
+)
+
 install(
     TARGETS cjks
     EXPORT cjks_targets
@@ -80,3 +87,5 @@ install(
 )
 
 install(EXPORT cjks_targets FILE cjksConfig.cmake DESTINATION lib/cjks)
+
+add_custom_target(uninstall "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_SOURCE_DIR}/library_config/uninstall.cmake")
