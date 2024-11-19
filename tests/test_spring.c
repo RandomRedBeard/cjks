@@ -28,7 +28,7 @@ void test_decrypt() {
     EVP_PKEY* pk = d2i_AutoPrivateKey(NULL, &pkey, pk_buf.len);
     assert(pk);
 
-    int i = cjks_spring_decrypt(pk, es_buf.buf, es_buf.len);
+    int i = cjks_spring_decrypt(pk, es_buf.buf, es_buf.len, es_buf.buf);
     assert(strncmp("asd", es_buf.buf, i) == 0);
 
     EVP_PKEY_free(pk);
@@ -57,7 +57,7 @@ void test_jks_decrypt() {
     assert(mk && mk->tag == CJKS_PRIVATE_KEY_TAG);
 
     EVP_PKEY* pk = cjks_2evp(mk->entry.pk);
-    int i = cjks_spring_decrypt(pk, es_buf.buf, es_buf.len);
+    int i = cjks_spring_decrypt(pk, es_buf.buf, es_buf.len, es_buf.buf);
     assert(strncmp("asd", es_buf.buf, i) == 0);
 
     fclose(fp);
