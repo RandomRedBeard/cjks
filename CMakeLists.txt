@@ -1,16 +1,19 @@
 cmake_minimum_required(VERSION 3.22)
 project(cjks C)
 
+# Includes
 include(GNUInstallDirs)
 include(CTest)
 include(CheckIncludeFile)
+
+# Valgrind memcheck
 find_program(MEMORYCHECK_COMMAND valgrind)
 set(MEMORYCHECK_COMMAND_OPTIONS "--leak-check=full --show-leak-kinds=all")
 
+# bits
 CHECK_INCLUDE_FILE("endian.h" HAS_ENDIAN_H)
 
-find_program(KEYTOOL_COMMAND keytool)
-
+# Compilation options
 file(GLOB CJKS_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/src/*.c)
 file(GLOB CJKS_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/include/cjks/*.h)
 
@@ -36,6 +39,7 @@ else()
     target_compile_options(cjks PRIVATE -Wall -Wextra -pedantic)
 endif()
 
+# Linkage
 find_package(Iconv REQUIRED)
 find_package(OpenSSL REQUIRED)
 
@@ -59,7 +63,6 @@ set_target_properties(cjks
 )
 
 # TESTS
-
 if (${CJKS_TEST})
     set(CJKS_RES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/resources)
     file(GLOB files tests/*.c)
@@ -78,7 +81,6 @@ endif()
 
 
 # INSTALL Section
-
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/library_config/libcjks.pc.in"
     "${CMAKE_CURRENT_BINARY_DIR}/libcjks.pc" @ONLY)
 
