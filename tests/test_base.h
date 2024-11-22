@@ -17,7 +17,7 @@
 _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE); \
 _CrtSetReportFile(_CRT_WARN, _CRTDBG_FILE_STDOUT);
 
-#define memcheckfin     _CrtDumpMemoryLeaks()? assert(0):assert(1);
+#define memcheckfin     _CrtDumpMemoryLeaks()?assert(0):assert(1);
 #else
 #define memcheckinit
 #define memcheckfin

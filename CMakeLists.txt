@@ -58,19 +58,26 @@ set_target_properties(cjks
     PUBLIC_HEADER "${CJKS_HEADERS}"
 )
 
-set(CJKS_RES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/resources)
-file(GLOB files tests/*.c)
-foreach(file ${files})
-    get_filename_component(tname ${file} NAME_WLE)
-    add_executable(${tname} ${file})
-    target_link_libraries(${tname} cjks ${CJKS_LINKS})
-    if (${CJKS_STATIC})
-        target_compile_definitions(${tname} PRIVATE CJKS_RES_DIR="${CJKS_RES_DIR}" CJKS_STATIC)
-    else()
-        target_compile_definitions(${tname} PRIVATE CJKS_RES_DIR="${CJKS_RES_DIR}")
-    endif()
-    add_test(NAME ${tname} COMMAND ${tname})
-endforeach()
+# TESTS
+
+if (${CJKS_TEST})
+    set(CJKS_RES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/resources)
+    file(GLOB files tests/*.c)
+    foreach(file ${files})
+        get_filename_component(tname ${file} NAME_WLE)
+        add_executable(${tname} ${file})
+        target_link_libraries(${tname} cjks ${CJKS_LINKS})
+        if (${CJKS_STATIC})
+            target_compile_definitions(${tname} PRIVATE CJKS_RES_DIR="${CJKS_RES_DIR}" CJKS_STATIC)
+        else()
+            target_compile_definitions(${tname} PRIVATE CJKS_RES_DIR="${CJKS_RES_DIR}")
+        endif()
+        add_test(NAME ${tname} COMMAND ${tname})
+    endforeach()
+endif()
+
+
+# INSTALL Section
 
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/library_config/libcjks.pc.in"
     "${CMAKE_CURRENT_BINARY_DIR}/libcjks.pc" @ONLY)
