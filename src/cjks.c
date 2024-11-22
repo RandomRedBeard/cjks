@@ -27,16 +27,16 @@ cjks* cjks_parse(cjks_io* io, const char* password, size_t len) {
         chain->ts = cjks_io_read_be8(io);
 
         if (tag == CJKS_PRIVATE_KEY_TAG) {
-            chain->entry.pk = cjks_pk_new();
-            if (cjks_parse_pk(io, chain->entry.pk) < 0) {
+            chain->pk = cjks_pk_new();
+            if (cjks_parse_pk(io, chain->pk) < 0) {
                 perror("Failed to parse jks");
                 break;
             }
-            cjks_decrypt_pk(chain->entry.pk, password, len);
+            cjks_decrypt_pk(chain->pk, password, len);
         }
         else if (tag == CJKS_TRUSTED_CERT_TAG) {
-            chain->entry.ca = cjks_ca_new();
-            if (cjks_parse_ca(io, chain->entry.ca) < 0) {
+            chain->ca = cjks_ca_new();
+            if (cjks_parse_ca(io, chain->ca) < 0) {
                 perror("Failed to parse jks");
                 break;
             }
@@ -65,6 +65,20 @@ cjks* cjks_parse_ex(cjks_io* io, char* password, size_t len, const char* encodin
     return cjks_parse(io, epwd, epwd_len);
 }
 
+cjks* cjks_parse_ex2(const char* pth, char* password, size_t len, const char* encoding) {
+    FILE* fp = fopen(pth, "rb");
+    if (!fp) {
+        return NULL;
+    }
+
+    cjks_io* io = cjks_io_fs_new(fp);
+    cjks* jks = cjks_parse_ex(io, password, len, encoding);
+    cjks_io_fs_free(io);
+    fclose(fp);
+    return jks;
+}
+
+
 cjks* cjks_get(cjks* jks, const char* alias) {
     while (jks) {
         if (strcmp(jks->alias, alias) == 0) {
@@ -88,10 +102,10 @@ void cjks_free(cjks* jks) {
         free(jks->alias);
         switch(jks->tag) {
         case CJKS_PRIVATE_KEY_TAG:
-            cjks_pk_free(jks->entry.pk);
+            cjks_pk_free(jks->pk);
             break;
         case CJKS_TRUSTED_CERT_TAG:
-            cjks_ca_free(jks->entry.ca);
+            cjks_ca_free(jks->ca);
             break;
         }
         free(jks);
@@ -225,4 +239,11 @@ int cjks_decrypt_pk(cjks_pkey* pk, const char* password, size_t len) {
 EVP_PKEY *cjks_2evp(const cjks_pkey *pkey) {
     const unsigned char *ptr = pkey->key.buf;
     return d2i_AutoPrivateKey(NULL, &ptr, (long)pkey->key.len);
+}
+
+EVP_PKEY *cjks_2evp2(const cjks* jks) {
+    if (jks->tag != CJKS_PRIVATE_KEY_TAG) {
+        return NULL;
+    }
+    return cjks_2evp(jks->pk);
 }

@@ -37,12 +37,13 @@ typedef struct cjks_entry_st {
     union {
         cjks_pkey* pk;
         cjks_ca* ca;
-    } entry;
+    };
     struct cjks_entry_st *next;
 } cjks;
 
 CJKS_DLL cjks* cjks_parse(cjks_io* io, const char* password, size_t len);
 CJKS_DLL cjks* cjks_parse_ex(cjks_io* io, char* password, size_t len, const char* encoding);
+CJKS_DLL cjks* cjks_parse_ex2(const char* pth, char* password, size_t len, const char* encoding);
 CJKS_DLL cjks* cjks_get(cjks* jks, const char* alias);
 CJKS_DLL cjks *cjks_new(int tag);
 CJKS_DLL void cjks_free(cjks* jks);
@@ -56,5 +57,6 @@ CJKS_DLL int cjks_parse_eber(const cjks_buf *eber, ASN1_TYPE** ber);
 CJKS_DLL void cjks_keystream(unsigned char *cur, const char *password, size_t plen);
 CJKS_DLL int cjks_decrypt_pk(cjks_pkey* pk, const char* password, size_t len);
 CJKS_DLL EVP_PKEY *cjks_2evp(const cjks_pkey *pkey);
+CJKS_DLL EVP_PKEY *cjks_2evp2(const cjks* jks);
 
 #endif

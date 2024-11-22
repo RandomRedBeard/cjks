@@ -62,3 +62,15 @@ error:
     return -1;
 
 }
+
+int cjks_spring_decrypt2(cjks* jks, unsigned char *src, size_t slen, unsigned char* dst) {
+    EVP_PKEY* pk = cjks_2evp2(jks);
+    if (!pk) {
+        return -1;
+    }
+
+    int i = cjks_spring_decrypt(pk, src, slen, dst);
+    EVP_PKEY_free(pk);
+
+    return i;
+}
