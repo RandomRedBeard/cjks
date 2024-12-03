@@ -46,7 +46,7 @@ void test_load() {
     cjks *jks = cjks_parse_ex(io, "changeit", sizeof("changeit") - 1, "US-ASCII");
     validate_jks(jks);
 
-    fclose(fp);
+    cjks_io_close(io);
     cjks_io_fs_free(io);
     cjks_free(jks);
 }

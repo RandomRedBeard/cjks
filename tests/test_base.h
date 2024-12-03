@@ -26,6 +26,30 @@ _CrtSetReportFile(_CRT_WARN, _CRTDBG_FILE_STDOUT);
 #include <assert.h>
 #include <stdio.h>
 
+/**
+ * @brief Read all bytes from file path into buffer
+ * 
+ * @param path 
+ * @param buf 
+ * @return int 
+ */
+static int cjks_io_read_all(const char* path, cjks_buf* buf) {
+    FILE *fp = fopen(path, "rb");
+    if (!fp) {
+        return -1;
+    }
+
+    fseek(fp, 0, SEEK_END);
+    buf->len = ftell(fp);
+    buf->buf = malloc(buf->len);
+
+    fseek(fp, 0, SEEK_SET);
+    fread(buf->buf, 1, buf->len, fp);
+    fclose(fp);
+    return 0;
+}
+
+
 typedef void(*test_fn)();
 typedef struct {
     const char* name;

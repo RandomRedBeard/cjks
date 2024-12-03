@@ -97,4 +97,11 @@ install(
 
 install(EXPORT cjks_targets FILE cjksConfig.cmake DESTINATION lib/cjks)
 
-add_custom_target(uninstall "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_SOURCE_DIR}/library_config/uninstall.cmake")
+if (NOT TARGET uninstall)
+    configure_file(
+        "${CMAKE_CURRENT_SOURCE_DIR}/library_config/uninstall.cmake.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/library_config/uninstall.cmake"
+        @ONLY
+    )
+    add_custom_target(uninstall "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/library_config/uninstall.cmake")
+endif()

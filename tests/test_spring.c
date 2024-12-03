@@ -60,7 +60,7 @@ void test_jks_decrypt() {
     int i = cjks_spring_decrypt(pk, es_buf.buf, es_buf.len, es_buf.buf);
     assert(strncmp("asd", es_buf.buf, i) == 0);
 
-    fclose(fp);
+    cjks_io_close(io);
     EVP_PKEY_free(pk);
     cjks_buf_clear(&es_buf);
     cjks_io_fs_free(io);
@@ -91,7 +91,7 @@ void test_jks_decrypt2() {
     int i = cjks_spring_decrypt(pk, es_buf.buf, es_buf.len, es_buf.buf);
     assert(strncmp("asd", es_buf.buf, i) == 0);
 
-    fclose(fp);
+    cjks_io_close(io);
     EVP_PKEY_free(pk);
     cjks_buf_clear(&es_buf);
     cjks_io_fs_free(io);

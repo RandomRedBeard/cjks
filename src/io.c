@@ -3,22 +3,6 @@
 /**
  * BUF functions
  */
-int cjks_io_read_all(const char* path, cjks_buf* buf) {
-    FILE *fp = fopen(path, "rb");
-    if (!fp) {
-        return -1;
-    }
-
-    fseek(fp, 0, SEEK_END);
-    buf->len = ftell(fp);
-    buf->buf = malloc(buf->len);
-
-    fseek(fp, 0, SEEK_SET);
-    fread(buf->buf, 1, buf->len, fp);
-    fclose(fp);
-    return 0;
-}
-
 void cjks_buf_clear(const cjks_buf* buf) {
     free(buf->buf);
 }
