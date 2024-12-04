@@ -60,12 +60,54 @@ void test_load2() {
 
     validate_jks(jks);
     cjks_free(jks);
+}
 
+void test_chain() {
+    char ksp[128];
+    memcpy(ksp, CJKS_RES_DIR, strlen(CJKS_RES_DIR) + 1);
+    strcat(ksp, "/keystore");
+
+    cjks *jks = cjks_parse_ex2(ksp, "changeit", sizeof("changeit") - 1, "US-ASCII"), *jptr = jks;
+
+    unsigned char* cert = jks->pk->cert_chain->cert.buf;
+    size_t cert_len = jks->pk->cert_chain->cert.len;
+
+    X509* x509_cert = NULL;
+    if (!d2i_X509(&x509_cert, &cert, cert_len)) {
+        ERR_print_errors_fp(stderr);
+    }
+
+    X509_print_fp(stderr, x509_cert);
+
+    sk_X509_new_null();
+
+    cjks_free(jks);
+}
+
+void test_chain2() {
+    char ksp[128];
+    memcpy(ksp, CJKS_RES_DIR, strlen(CJKS_RES_DIR) + 1);
+    strcat(ksp, "/keystore_ca");
+
+    cjks *jks = cjks_parse_ex2(ksp, "changeit", sizeof("changeit") - 1, "US-ASCII"), *jptr = jks;
+
+    assert(jks);
+    assert(jks->tag == CJKS_PRIVATE_KEY_TAG);
+
+    cjks_ca* ca = jks->pk->cert_chain;
+    while (ca) {
+        printf("Count\n");
+        ca = ca->next;
+    }
+
+    cjks_free(jks);
 }
 
 test_st tests[] = {
     // {"load", test_load},
-    {"load2", test_load2},
+    // {"load2", test_load2},
+    // {"chain", test_chain},
+    {"chain2", test_chain2},
     {NULL, NULL}
 };
 
