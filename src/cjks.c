@@ -1,4 +1,5 @@
 #include "cjks/cjks.h"
+#include "private/debug.h"
 
 cjks* cjks_parse(cjks_io* io, const char* password, size_t len) {
     char header[4];
@@ -213,6 +214,10 @@ int cjks_decrypt_pk(cjks_pkey* pk, const char* password, size_t len) {
 
     unsigned char cur[SHA_DIGEST_LENGTH], *cptr = cur;
     memcpy(cur, ber->value.octet_string->data, SHA_DIGEST_LENGTH);
+
+#ifndef NDEBUG
+    cjks_b64_print(ber->value.octet_string->data + 20, ber->value.octet_string->length - 40);
+#endif
 
     // 20 bytes for iv in front, 20 for hash in back
     unsigned char *pkey_buf = malloc(ber->value.octet_string->length - 40), *pkey_ptr = pkey_buf;

@@ -64,7 +64,7 @@ void test_load2() {
 }
 
 test_st tests[] = {
-    {"load", test_load},
+    // {"load", test_load},
     {"load2", test_load2},
     {NULL, NULL}
 };

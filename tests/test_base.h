@@ -26,6 +26,8 @@ _CrtSetReportFile(_CRT_WARN, _CRTDBG_FILE_STDOUT);
 #include <assert.h>
 #include <stdio.h>
 
+#include <cjks/io.h>
+
 /**
  * @brief Read all bytes from file path into buffer
  * 
