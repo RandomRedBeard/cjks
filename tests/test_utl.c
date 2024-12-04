@@ -22,9 +22,24 @@ void test_encode() {
     assert(strcmp("aGVsbG8=\n", buf) == 0);
 }
 
+void test_sha() {
+    char b64sha_cmp1[] = "qqbEQ1PXUq2YLwMl0JBBin9V7m8=";
+    char sha_src[] = "this is thomas";
+
+    char sha_cmp2[SHA_DIGEST_LENGTH + 1];
+    cjks_sha1(sha_src, sizeof(sha_src) - 1, sha_cmp2);
+
+    char sha_cmp1[SHA_DIGEST_LENGTH + 1];
+    cjks_b64decode(sha_cmp1, b64sha_cmp1, sizeof(b64sha_cmp1) - 1);
+
+    assert(memcmp(sha_cmp1, sha_cmp2, SHA_DIGEST_LENGTH) == 0);
+    assert(cjks_sha1_cmp(sha_src, sizeof(sha_src) - 1, sha_cmp1));
+}
+
 test_st tests[] = {
     {"encode", test_encode},
     {"decode", test_decode},
+    {"sha1", test_sha},
     {NULL, NULL}
 };
 

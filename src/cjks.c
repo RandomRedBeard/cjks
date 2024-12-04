@@ -216,7 +216,7 @@ int cjks_decrypt_pk(cjks_pkey* pk, const char* password, size_t len) {
     memcpy(cur, ber->value.octet_string->data, SHA_DIGEST_LENGTH);
 
 #ifndef NDEBUG
-    cjks_b64_print(ber->value.octet_string->data + 20, ber->value.octet_string->length - 40);
+    cjks_b64_print(ber->value.octet_string->data, ber->value.octet_string->length);
 #endif
 
     // 20 bytes for iv in front, 20 for hash in back
