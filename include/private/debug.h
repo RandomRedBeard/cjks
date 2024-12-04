@@ -7,7 +7,8 @@
 #include <cjks/utl.h>
 
 static void cjks_b64_print(const unsigned char* v, size_t len) {
-    int l = (((int)len * 4) / 3) + 4;
+    int l = (((int)(len + 2)/ 3.0) * 4.0);
+    l += (l / 64) + 1;
     unsigned char* dest = (unsigned char*)malloc(l);
     int i = cjks_b64encode(dest, v, len);
     if (i < 0) {
