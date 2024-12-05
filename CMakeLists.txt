@@ -5,6 +5,7 @@ project(cjks C)
 include(GNUInstallDirs)
 include(CTest)
 include(CheckIncludeFile)
+include(CheckSourceCompiles)
 
 # Valgrind memcheck
 find_program(MEMORYCHECK_COMMAND valgrind)
@@ -43,6 +44,32 @@ endif()
 find_package(Iconv REQUIRED)
 find_package(OpenSSL REQUIRED)
 
+# Check iconv
+set(CJKS_INCLUDES ${Iconv_INCLUDE_DIRS} ${OPENSSL_INCLUDE_DIR})
+
+set(CMAKE_REQUIRED_INCLUDES "${CJKS_INCLUDES}")
+set(CMAKE_REQUIRED_LIBRARIES "${Iconv_LIBRARIES}")
+
+set(ICONV_TEST_CODE "
+#include <stdlib.h>
+#include <iconv.h>
+int main() {
+iconv_open(NULL, NULL);
+return 0;
+}
+")
+
+check_source_compiles(C "${ICONV_TEST_CODE}" ICONV_COMPILES)
+
+if (NOT ICONV_COMPILES)
+    set(CMAKE_REQUIRED_DEFINITIONS -DLIBICONV_PLUG)
+    check_source_compiles(C "${ICONV_TEST_CODE}" LIBICONV_COMPILES)
+endif()
+
+if (LIBICONV_COMPILES)
+    target_compile_definitions(cjks PRIVATE LIBICONV_PLUG)
+endif()
+
 set(CJKS_LINKS Iconv::Iconv OpenSSL::Crypto)
 if (MSVC)
     set(CJKS_LINKS ${CJKS_LINKS} OpenSSL::applink ws2_32)
@@ -52,9 +79,11 @@ target_link_libraries(cjks
     PRIVATE
         ${CJKS_LINKS}
 )
-target_include_directories(cjks PUBLIC
-    $<INSTALL_INTERFACE:include>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+
+target_include_directories(cjks 
+    PUBLIC
+        $<INSTALL_INTERFACE:include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
 
 set_target_properties(cjks
