@@ -53,7 +53,7 @@ CJKS_DLL int cjks_parse_ca(cjks_io* io, cjks_ca* ca);
 CJKS_DLL cjks_pkey* cjks_pk_new();
 CJKS_DLL void cjks_pk_free(cjks_pkey* pk);
 CJKS_DLL int cjks_parse_pk(cjks_io* io, cjks_pkey* pk);
-CJKS_DLL int cjks_parse_eber(const cjks_buf *eber, ASN1_TYPE** ber);
+CJKS_DLL int cjks_parse_eber(const cjks_buf *eber, X509_SIG** sig);
 CJKS_DLL void cjks_keystream(unsigned char *cur, const char *password, size_t plen);
 CJKS_DLL int cjks_decrypt_pk(cjks_pkey* pk, const char* password, size_t len);
 CJKS_DLL EVP_PKEY *cjks_2evp(const cjks_pkey *pkey);

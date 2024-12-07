@@ -162,34 +162,11 @@ int cjks_parse_pk(cjks_io* io, cjks_pkey* pk) {
 }
 
 
-int cjks_parse_eber(const cjks_buf *eber, ASN1_TYPE **ber) {
-    ASN1_SEQUENCE_ANY *seq = NULL;
-    ASN1_TYPE *type = NULL;
-
-    const unsigned char *bptr = eber->buf;
-    long rlen;
-    int ptag, pclass;
-
-    ASN1_get_object(&bptr, &rlen, &ptag, &pclass, (long)eber->len);
-    if (ptag != V_ASN1_SEQUENCE) {
+int cjks_parse_eber(const cjks_buf *eber, X509_SIG** sig) {
+    const unsigned char* dptr = eber->buf;
+    if (!ASN1_item_d2i(sig, &dptr, eber->len, ASN1_ITEM_rptr(X509_SIG))) {
         return -1;
     }
-
-    bptr = eber->buf;
-    if (!d2i_ASN1_SEQUENCE_ANY(&seq, &bptr, (long)eber->len)) {
-        ERR_print_errors_fp(stderr);
-        return -1;
-    }
-
-    while ((type = sk_ASN1_TYPE_pop(seq))) {
-        if (ASN1_TYPE_get(type) == V_ASN1_OCTET_STRING) {
-            *ber = type;
-        } else {
-            ASN1_TYPE_free(type);
-        }
-    }
-
-    sk_ASN1_TYPE_free(seq);
 
     return 0;
 }
@@ -207,21 +184,24 @@ void cjks_keystream(unsigned char *cur, const char *password, size_t plen) {
 }
 
 int cjks_decrypt_pk(cjks_pkey* pk, const char* password, size_t len) {
-    ASN1_TYPE* ber = NULL;
-    ASN1_OCTET_STRING* ber_s = NULL;
-    cjks_parse_eber(&pk->encrypted_ber, &ber);
-    ber_s = ber->value.octet_string;
+    X509_SIG* sig = NULL;
+    const ASN1_OCTET_STRING* digest;
+    if (cjks_parse_eber(&pk->encrypted_ber, &sig) < 0) {
+        return -1;
+    }
+
+    X509_SIG_get0(sig, NULL, &digest);
 
     unsigned char cur[SHA_DIGEST_LENGTH], *cptr = cur;
-    memcpy(cur, ber->value.octet_string->data, SHA_DIGEST_LENGTH);
+    memcpy(cur, digest->data, SHA_DIGEST_LENGTH);
 
 #ifndef NDEBUG
-    cjks_b64_print(ber->value.octet_string->data, ber->value.octet_string->length);
+    cjks_b64_print(digest->data, digest->length);
 #endif
 
     // 20 bytes for iv in front, 20 for hash in back
-    unsigned char *pkey_buf = malloc(ber->value.octet_string->length - 40), *pkey_ptr = pkey_buf;
-    unsigned char *pkey_end = ber_s->data + ber_s->length - 20, *dptr = ber_s->data + 20;
+    unsigned char *pkey_buf = malloc(digest->length - 40), *pkey_ptr = pkey_buf;
+    unsigned char *pkey_end = digest->data + digest->length - 20, *dptr = digest->data + 20;
     cjks_keystream(cur, password, len);
 
     while (dptr != pkey_end) {
@@ -234,9 +214,9 @@ int cjks_decrypt_pk(cjks_pkey* pk, const char* password, size_t len) {
     }
 
     pk->key.buf = pkey_buf;
-    pk->key.len = ber_s->length - 40;
+    pk->key.len = digest->length - 40;
 
-    ASN1_TYPE_free(ber);
+    X509_SIG_free(sig);
 
     return 0;
 }
