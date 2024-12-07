@@ -77,8 +77,6 @@ int cjks_vsha1(void *out, int n, va_list args) {
         }
     }
 
-    va_end(args);
-
     if (!EVP_DigestFinal(ctx, out, &olen)) {
         EVP_MD_CTX_free(ctx);
         return -1;
