@@ -196,11 +196,10 @@ int cjks_decrypt_pk(cjks_pkey* pk, const char* password, size_t len) {
 
     X509_SIG_get0(sig, &algor, &digest);
 
-    int i = OBJ_create(SUN_JKS_ALGO_ID, "SUNJKS", "SUN_JKS_ALGO_ID");
+    int i = OBJ_create("1.3.6.1.4.1.42.2.17.1.1", "SUNJKS", "SUN_JKS_ALGO_ID");
     printf("%d\n", i);
 
-
-    // const unsigned char* al = OBJ_get0_data(algor->algorithm);
+    const unsigned char* al = OBJ_get0_data(algor->algorithm);
 
     // if (memcmp(SUN_JKS_ALGO_ID, al, sizeof(SUN_JKS_ALGO_ID)) != 0) {
     //     X509_SIG_free(sig);
