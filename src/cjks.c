@@ -167,7 +167,7 @@ int cjks_parse_pk(cjks_io *io, cjks_pkey *pk) {
 
 int cjks_parse_eber(const cjks_buf *eber, X509_SIG **sig) {
     const unsigned char *dptr = eber->buf;
-    if (!ASN1_item_d2i(sig, &dptr, eber->len, ASN1_ITEM_rptr(X509_SIG))) {
+    if (!ASN1_item_d2i((ASN1_VALUE **)sig, &dptr, (long)eber->len, ASN1_ITEM_rptr(X509_SIG))) {
         return -1;
     }
 
@@ -176,7 +176,8 @@ int cjks_parse_eber(const cjks_buf *eber, X509_SIG **sig) {
 
 void cjks_sun_jks_crypt(const unsigned char *src, unsigned char *dest, size_t len, unsigned char *iv, const char *password, size_t plen) {
     unsigned char *ivptr = iv, *ivptrend = iv + SHA_DIGEST_LENGTH;
-    unsigned char *dptr = dest, *sptr = src, *sptrend = src + len;
+    unsigned char *dptr = dest;
+    const unsigned char *sptr = src, *sptrend = src + len;
 
     cjks_sha1(iv, 2, password, plen, iv, (size_t)20);
     while (sptr != sptrend) {

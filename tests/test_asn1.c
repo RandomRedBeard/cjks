@@ -26,9 +26,9 @@ int main() {
     int dlen = cjks_b64decode(dest, data, sizeof(data) - 1);
     printf("%d\n", dlen);
 
-    X509_SIG* sig = NULL;
+    X509_SIG *sig = NULL;
 
-    if (!ASN1_item_d2i(&sig, &dptr, dlen, ASN1_ITEM_rptr(X509_SIG))) {
+    if (!ASN1_item_d2i((ASN1_VALUE **)&sig, &dptr, dlen, ASN1_ITEM_rptr(X509_SIG))) {
         ERR_print_errors_fp(stderr);
         printf("Failed\n");
         return -1;
