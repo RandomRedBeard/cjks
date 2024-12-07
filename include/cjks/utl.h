@@ -1,11 +1,13 @@
 #ifndef CJKS_UTL_H
 #define CJKS_UTL_H
 
+
+#include <string.h>
+#include <varargs.h>
+
 #include <openssl/evp.h>
 #include <openssl/sha.h>
 #include <cjks/lib.h>
-
-#include <string.h>
 
 static const char cjks_hex_chars[] = "0123456789abcdef";
 
@@ -17,7 +19,8 @@ CJKS_DLL int cjks_b64encode(unsigned char *dest, const unsigned char *src, size_
  */
 CJKS_DLL int cjks_hex(char *dest, const unsigned char *src, size_t len);
 
-CJKS_DLL int cjks_sha1(const void *in, size_t ilen, void *out);
-CJKS_DLL int cjks_sha1_cmp(const void *data, size_t ilen, const void *sha);
+CJKS_DLL int cjks_sha1(void* out, int n, ...);
+CJKS_DLL int cjks_vsha1(void* out, int n, va_list args);
+CJKS_DLL int cjks_sha1_cmp(const void* sha1, int n, ...);
 
 #endif

@@ -4,13 +4,12 @@
 
 #include "test_base.h"
 
-char b64iv[] = "24Zy9qgZlnJBNMMDpOEXDIEBJas=";
 unsigned char b64password[] = "AGMAaABhAG4AZwBlAGkAdA==";
 
 int main() {
     char ksp[128];
     memcpy(ksp, CJKS_RES_DIR, sizeof(CJKS_RES_DIR));
-    strcat(ksp, "/d.key");
+    strcat(ksp, "/dig");
 
     cjks_buf b64data = CJKS_BUF_INIT;
     cjks_io_read_all(ksp, &b64data);
@@ -21,26 +20,12 @@ int main() {
     unsigned char password[128];
     int plen = cjks_b64decode(password, b64password, sizeof(b64password) - 1);
 
-    char iv[32], *cptr = iv;
-    int ivlen = cjks_b64decode(iv, b64iv, sizeof(b64iv) - 1);
-
     char dest[2048], *pkey_ptr = dest;
 
-    cjks_keystream(iv, password, plen);
+    int r = cjks_sun_jks_decrypt(data, dest, dlen, password, plen);
+    printf("%d\n", r);
 
-    char *dptr = data;
-    char *pkey_end = data + dlen;
-
-    while (dptr != pkey_end) {
-        *pkey_ptr++ = *dptr++ ^ *cptr++;
-
-        if (cptr - iv == SHA_DIGEST_LENGTH) {
-            cjks_keystream(iv, password, plen);
-            cptr = iv;
-        }
-    }
-
-    cjks_b64_print(dest, dlen);
+    cjks_b64_print(dest, dlen - 40);
 
     return 0;
 }

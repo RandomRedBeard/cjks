@@ -27,13 +27,13 @@ void test_sha() {
     char sha_src[] = "this is thomas";
 
     char sha_cmp2[SHA_DIGEST_LENGTH + 1];
-    cjks_sha1(sha_src, sizeof(sha_src) - 1, sha_cmp2);
+    cjks_sha1(sha_cmp2, 1, sha_src, sizeof(sha_src) - 1);
 
     char sha_cmp1[SHA_DIGEST_LENGTH + 1];
     cjks_b64decode(sha_cmp1, b64sha_cmp1, sizeof(b64sha_cmp1) - 1);
 
     assert(memcmp(sha_cmp1, sha_cmp2, SHA_DIGEST_LENGTH) == 0);
-    assert(cjks_sha1_cmp(sha_src, sizeof(sha_src) - 1, sha_cmp1));
+    assert(cjks_sha1_cmp(sha_cmp1, 1, sha_src, sizeof(sha_src) - 1));
 }
 
 test_st tests[] = {
