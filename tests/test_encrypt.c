@@ -9,7 +9,7 @@ unsigned char b64password[] = "AGMAaABhAG4AZwBlAGkAdA==";
 
 int main() {
     char ksp[128];
-    memcpy(ksp, CJKS_RES_DIR, strlen(CJKS_RES_DIR) + 1);
+    memcpy(ksp, CJKS_RES_DIR, sizeof(CJKS_RES_DIR));
     strcat(ksp, "/d.key");
 
     cjks_buf b64data = CJKS_BUF_INIT;

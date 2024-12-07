@@ -8,7 +8,7 @@
 
 void test_decrypt() {
     char kp[128];
-    memcpy(kp, CJKS_RES_DIR, strlen(CJKS_RES_DIR) + 1);
+    memcpy(kp, CJKS_RES_DIR, sizeof(CJKS_RES_DIR));
     strcat(kp, "/d.key");
     cjks_buf pk_buf;
     cjks_io_read_all(kp, &pk_buf);
@@ -17,7 +17,7 @@ void test_decrypt() {
     assert(pk_buf.len != 0);
 
     char est[128];
-    memcpy(est, CJKS_RES_DIR, strlen(CJKS_RES_DIR) + 1);
+    memcpy(est, CJKS_RES_DIR, sizeof(CJKS_RES_DIR));
     strcat(est, "/estring");
     cjks_buf es_buf;
     cjks_io_read_all(est, &es_buf);
@@ -38,11 +38,11 @@ void test_decrypt() {
 
 void test_jks_decrypt() {
     char kp[128];
-    memcpy(kp, CJKS_RES_DIR, strlen(CJKS_RES_DIR) + 1);
+    memcpy(kp, CJKS_RES_DIR, sizeof(CJKS_RES_DIR));
     strcat(kp, "/keystore");
 
     char est[128];
-    memcpy(est, CJKS_RES_DIR, strlen(CJKS_RES_DIR) + 1);
+    memcpy(est, CJKS_RES_DIR, sizeof(CJKS_RES_DIR));
     strcat(est, "/estring");
     cjks_buf es_buf;
     cjks_io_read_all(est, &es_buf);
@@ -69,11 +69,11 @@ void test_jks_decrypt() {
 
 void test_jks_decrypt2() {
     char kp[128];
-    memcpy(kp, CJKS_RES_DIR, strlen(CJKS_RES_DIR) + 1);
+    memcpy(kp, CJKS_RES_DIR, sizeof(CJKS_RES_DIR));
     strcat(kp, "/keystore");
 
     char est[128];
-    memcpy(est, CJKS_RES_DIR, strlen(CJKS_RES_DIR) + 1);
+    memcpy(est, CJKS_RES_DIR, sizeof(CJKS_RES_DIR));
     strcat(est, "/estring");
     cjks_buf es_buf;
     cjks_io_read_all(est, &es_buf);
@@ -101,11 +101,11 @@ void test_jks_decrypt2() {
 
 void test_jks_decrypt3() {
     char kp[128];
-    memcpy(kp, CJKS_RES_DIR, strlen(CJKS_RES_DIR) + 1);
+    memcpy(kp, CJKS_RES_DIR, sizeof(CJKS_RES_DIR));
     strcat(kp, "/keystore");
 
     char est[128];
-    memcpy(est, CJKS_RES_DIR, strlen(CJKS_RES_DIR) + 1);
+    memcpy(est, CJKS_RES_DIR, sizeof(CJKS_RES_DIR));
     strcat(est, "/estring");
     cjks_buf es_buf;
     cjks_io_read_all(est, &es_buf);

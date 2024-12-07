@@ -20,7 +20,7 @@ void validate_jks(cjks *jks) {
     assert(mk->pk->key.len > 0);
 
     char kp[128];
-    memcpy(kp, CJKS_RES_DIR, strlen(CJKS_RES_DIR) + 1);
+    memcpy(kp, CJKS_RES_DIR, sizeof(CJKS_RES_DIR));
     strcat(kp, "/d.key");
 
     cjks_buf dkey = CJKS_BUF_INIT;
@@ -37,7 +37,7 @@ void validate_jks(cjks *jks) {
 
 void test_load() {
     char ksp[128];
-    memcpy(ksp, CJKS_RES_DIR, strlen(CJKS_RES_DIR) + 1);
+    memcpy(ksp, CJKS_RES_DIR, sizeof(CJKS_RES_DIR));
     strcat(ksp, "/keystore");
     FILE *fp = fopen(ksp, "rb");
     assert(fp);
@@ -53,7 +53,7 @@ void test_load() {
 
 void test_load2() {
     char ksp[128];
-    memcpy(ksp, CJKS_RES_DIR, strlen(CJKS_RES_DIR) + 1);
+    memcpy(ksp, CJKS_RES_DIR, sizeof(CJKS_RES_DIR));
     strcat(ksp, "/keystore");
 
     cjks *jks = cjks_parse_ex2(ksp, "changeit", sizeof("changeit") - 1, "US-ASCII"), *jptr = jks;
@@ -64,7 +64,7 @@ void test_load2() {
 
 void test_chain() {
     char ksp[128];
-    memcpy(ksp, CJKS_RES_DIR, strlen(CJKS_RES_DIR) + 1);
+    memcpy(ksp, CJKS_RES_DIR, sizeof(CJKS_RES_DIR));
     strcat(ksp, "/keystore");
 
     cjks *jks = cjks_parse_ex2(ksp, "changeit", sizeof("changeit") - 1, "US-ASCII"), *jptr = jks;
@@ -79,14 +79,12 @@ void test_chain() {
 
     X509_print_fp(stderr, x509_cert);
 
-    sk_X509_new_null();
-
     cjks_free(jks);
 }
 
 void test_chain2() {
     char ksp[128];
-    memcpy(ksp, CJKS_RES_DIR, strlen(CJKS_RES_DIR) + 1);
+    memcpy(ksp, CJKS_RES_DIR, sizeof(CJKS_RES_DIR));
     strcat(ksp, "/keystore_ca");
 
     cjks *jks = cjks_parse_ex2(ksp, "changeit", sizeof("changeit") - 1, "US-ASCII"), *jptr = jks;
@@ -105,9 +103,9 @@ void test_chain2() {
 
 test_st tests[] = {
     // {"load", test_load},
-    // {"load2", test_load2},
+    {"load2", test_load2},
     // {"chain", test_chain},
-    {"chain2", test_chain2},
+    // {"chain2", test_chain2},
     {NULL, NULL}
 };
 
