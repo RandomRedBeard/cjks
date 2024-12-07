@@ -3,7 +3,7 @@
 
 
 #include <string.h>
-#include <varargs.h>
+#include <stdarg.h>
 
 #include <openssl/evp.h>
 #include <openssl/sha.h>
