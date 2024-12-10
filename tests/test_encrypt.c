@@ -45,8 +45,6 @@ void test_encrypt_dig() {
     unsigned char iv[SHA_DIGEST_LENGTH + 1];
     cjks_b64decode(iv, b64iv, sizeof(b64iv) - 1);
 
-    return;
-
     unsigned char password[128];
     int plen = cjks_b64decode(password, b64password, sizeof(b64password) - 1);
 

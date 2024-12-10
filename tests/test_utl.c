@@ -4,10 +4,20 @@
 #include "test_base.h"
 
 void test_decode() {
-    char *buf = "aGVsbG8=";
+    char* buf = "aGVsbG8=";
     char buf2[16];
     int l = cjks_b64decode(buf2, buf, strlen(buf));
     assert(strncmp("hello", buf2, l) == 0);
+}
+
+void test_decode_2() {
+    char kp[128];
+    memcpy(kp, CJKS_RES_DIR, sizeof(CJKS_RES_DIR));
+    strcat(kp, "/d.key");
+    cjks_buf pk_buf;
+    cjks_io_read_all(kp, &pk_buf);
+    int i = cjks_b64decode(pk_buf.buf, pk_buf.buf, pk_buf.len);
+    assert(i > 0);
 }
 
 /**
@@ -39,6 +49,7 @@ void test_sha() {
 test_st tests[] = {
     {"encode", test_encode},
     {"decode", test_decode},
+    {"decode2", test_decode_2},
     {"sha1", test_sha},
     {NULL, NULL}
 };

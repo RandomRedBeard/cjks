@@ -13,6 +13,7 @@ void test_decrypt() {
     cjks_buf pk_buf;
     cjks_io_read_all(kp, &pk_buf);
     pk_buf.len = cjks_b64decode(pk_buf.buf, pk_buf.buf, pk_buf.len);
+    printf("%ld\n", pk_buf.len);
 
     assert(pk_buf.len != 0);
 

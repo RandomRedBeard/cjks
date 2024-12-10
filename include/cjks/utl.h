@@ -8,6 +8,7 @@
 #include <openssl/evp.h>
 #include <openssl/sha.h>
 #include <cjks/lib.h>
+#include <cjks/bits.h>
 
 static const char cjks_hex_chars[] = "0123456789abcdef";
 
