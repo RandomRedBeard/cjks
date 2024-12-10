@@ -4,7 +4,7 @@
 #include "test_base.h"
 
 void test_decode() {
-    char* buf = "aGVsbG8=";
+    char *buf = "aGVsbG8=";
     char buf2[16];
     int l = cjks_b64decode(buf2, buf, strlen(buf));
     assert(strncmp("hello", buf2, l) == 0);
@@ -17,6 +17,7 @@ void test_decode_2() {
     cjks_buf pk_buf;
     cjks_io_read_all(kp, &pk_buf);
     int i = cjks_b64decode(pk_buf.buf, pk_buf.buf, pk_buf.len);
+    cjks_buf_clear(&pk_buf);
     assert(i > 0);
 }
 
@@ -35,11 +36,12 @@ void test_sha() {
     char b64sha_cmp1[] = "qqbEQ1PXUq2YLwMl0JBBin9V7m8=";
     char sha_src[] = "this is thomas";
 
-    char sha_cmp2[SHA_DIGEST_LENGTH + 1];
+    char sha_cmp2[SHA_DIGEST_LENGTH];
     cjks_sha1(sha_cmp2, 1, sha_src, sizeof(sha_src) - 1);
 
-    char sha_cmp1[SHA_DIGEST_LENGTH + 1];
-    cjks_b64decode(sha_cmp1, b64sha_cmp1, sizeof(b64sha_cmp1) - 1);
+    char sha_cmp1[SHA_DIGEST_LENGTH];
+    int i = cjks_b64decode(sha_cmp1, b64sha_cmp1, sizeof(b64sha_cmp1) - 1);
+    printf("%d\n", i);
 
     assert(memcmp(sha_cmp1, sha_cmp2, SHA_DIGEST_LENGTH) == 0);
     assert(cjks_sha1_cmp(sha_cmp1, 1, sha_src, sizeof(sha_src) - 1));

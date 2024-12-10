@@ -51,8 +51,8 @@ int cjks_b64decode(unsigned char* dest, const unsigned char* src, size_t len) {
     const unsigned char* psrce = src + len;
     unsigned char* dptr = dest;
 
-    int l, i;
-    char index, pcnt = 0;
+    unsigned int l, i;
+    char index, pcnt = 0, cp;
     while (src != psrce) {
         l = 0;
         for (i = 0; i < 4 && src != psrce; i++) {
@@ -90,10 +90,9 @@ int cjks_b64decode(unsigned char* dest, const unsigned char* src, size_t len) {
         }
 
         // Covers BigE case
-        *((int*)dptr) = cjks_ntohi(&l);
-
-        // Pad Calc
-        dptr += (pcnt == 0 ? 3 : 3 - pcnt);
+        l = cjks_ntohi(&l);
+        cp = (pcnt == 0 ? 3 : 3 - pcnt);
+        dptr = (unsigned char*)memcpy(dptr, &l, cp) + cp;
     }
 
     return dptr - dest;
@@ -143,7 +142,7 @@ int cjks_b64encode(unsigned char* dest, const unsigned char* src, size_t len) {
 
         if (cp < 3) {
             cp = 3 - cp;
-            dptr = memcpy(dptr, "==", cp) + cp;
+            dptr = (unsigned char*)memcpy(dptr, "==", cp) + cp;
         }
     }
 
