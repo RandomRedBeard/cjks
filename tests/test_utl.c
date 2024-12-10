@@ -25,11 +25,10 @@ void test_decode_2() {
  * Thanks openssl
  */
 void test_encode() {
-    char buf[sizeof("aGVsbG8=\n")];
-    memcpy(buf, "hello", sizeof("hello"));
-    int l = cjks_b64encode(buf, buf, strlen(buf));
+    char buf[sizeof("aGVsbG8=")];
+    int l = cjks_b64encode(buf, "hello", strlen("hello"));
     puts(buf);
-    assert(strcmp("aGVsbG8=\n", buf) == 0);
+    assert(strncmp("aGVsbG8=", buf, l) == 0);
 }
 
 void test_sha() {

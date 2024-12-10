@@ -1,7 +1,7 @@
 #include "cjks/utl.h"
 #include "private/debug.h"
 
-int cjks_b64decode(unsigned char *dest, const unsigned char *src, size_t len) {
+int cjks_b64decode_old(unsigned char *dest, const unsigned char *src, size_t len) {
     unsigned char *dptr = dest;
     int dlen;
     EVP_ENCODE_CTX *ctx = EVP_ENCODE_CTX_new();
@@ -20,7 +20,86 @@ int cjks_b64decode(unsigned char *dest, const unsigned char *src, size_t len) {
     return (int)(dptr + dlen - dest);
 }
 
-int cjks_b64encode(unsigned char *dest, const unsigned char *src, size_t len) {
+
+char cjks_b64i(char c) {
+    switch (c) {
+    case '+':
+        return 62;
+    case '/':
+        return 63;
+    }
+
+    char f = (c & (3 << 5));
+    char r = 0;
+
+    switch (f) {
+    case 32: // 0
+        r = c - '0';
+        return r < 10 ? 52 + r : -1;
+    case 64: // A
+        r = c - 'A';
+        return r < 27 ? r : -1;
+    case 96: // a
+        r = c - 'a';
+        return r < 27 ? 26 + r : -1;
+    default:
+        return -1;
+    }
+}
+
+int cjks_b64decode(unsigned char* dest, const unsigned char* src, size_t len) {
+    const unsigned char* psrce = src + len;
+    unsigned char* dptr = dest;
+
+    int l, i;
+    char index, pcnt = 0;
+    while (src != psrce) {
+        l = 0;
+        for (i = 0; i < 4 && src != psrce; i++) {
+            if (*src == '\n' || *src == '\r') {
+                src++;
+                i--;
+                continue;
+            }
+            // Expecting pad
+            if (pcnt > 0 && *src != '=') {
+                return -1;
+            }
+
+            if (*src == '=') { // Pad
+                if (pcnt == 2) {
+                    return -1;
+                }
+                pcnt++;
+            }
+            else { // Value
+                index = cjks_b64i(*src);
+                if (index < 0) {
+                    return -1;
+                }
+                l |= (int)index << (2 + (6 * (4 - i)));
+            }
+            src++;
+        }
+
+        if (i == 0) {
+            break;
+        }
+        if (i != 4) {
+            return -1;
+        }
+
+        // Covers BigE case
+        *((int*)dptr) = cjks_ntohi(&l);
+
+        // Pad Calc
+        dptr += (pcnt == 0 ? 3 : 3 - pcnt);
+    }
+
+    return dptr - dest;
+}
+
+int cjks_b64encode_old(unsigned char *dest, const unsigned char *src, size_t len) {
     unsigned char *dptr = dest;
     int dlen;
     EVP_ENCODE_CTX *ctx = EVP_ENCODE_CTX_new();
@@ -34,6 +113,41 @@ int cjks_b64encode(unsigned char *dest, const unsigned char *src, size_t len) {
     dptr += dlen;
     EVP_ENCODE_CTX_free(ctx);
     return (int)(dptr - dest);
+}
+
+
+int cjks_b64encode(unsigned char* dest, const unsigned char* src, size_t len) {
+    const unsigned char* psrce = src + len;
+    const unsigned char* padst = psrce - (len % 3);
+    unsigned char* dptr = dest;
+
+    unsigned int l;
+    int j;
+    char cp = 3;
+    while (src != psrce) {
+
+        // Lazy pad calculation
+        if (src == padst) {
+            cp = psrce - src;
+        }
+
+        // Copy max 3 bytes
+        l = 0;
+        memcpy(&l, src, cp);
+        src += cp;
+        l = cjks_htoni(&l);
+        for (j = 0; j < cp + 1; j++) {
+            *dptr++ = base64_table[l >> 26];
+            l = l << 6;
+        }
+
+        if (cp < 3) {
+            cp = 3 - cp;
+            dptr = memcpy(dptr, "==", cp) + cp;
+        }
+    }
+
+    return dptr - dest;
 }
 
 char cjks_v2a(int c) {

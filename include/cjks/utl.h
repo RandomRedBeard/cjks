@@ -11,6 +11,7 @@
 #include <cjks/bits.h>
 
 static const char cjks_hex_chars[] = "0123456789abcdef";
+static const char base64_table[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 CJKS_DLL int cjks_b64decode(unsigned char *dest, const unsigned char *src, size_t len);
 CJKS_DLL int cjks_b64encode(unsigned char *dest, const unsigned char *src, size_t len);
