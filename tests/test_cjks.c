@@ -93,15 +93,9 @@ void test_chain2() {
     cjks_free(jks);
 }
 
-test_st tests[] = {
-    {"load", test_load},
-    {"load2", test_load2},
-    {"chain", test_chain},
-    {"chain2", test_chain2},
-    {NULL, NULL}
-};
-
-int main() {
-    cjks_run_tests(tests);
-    return 0;
-}
+CJKS_TESTS_ST
+    CJKS_TEST(test_load)
+    CJKS_TEST(test_load2)
+    CJKS_TEST(test_chain)
+    CJKS_TEST(test_chain2)
+CJKS_TESTS_END

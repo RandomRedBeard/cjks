@@ -67,4 +67,13 @@ static void cjks_run_tests(test_st* tests) {
     }
 }
 
+#define CJKS_TESTS_ST test_st tests[] = {
+#define CJKS_TEST(func) {#func, func},
+#define CJKS_TESTS_END {NULL, NULL}, \
+}; \
+int main() { \
+    cjks_run_tests(tests); \
+    return 0; \
+}
+
 #endif

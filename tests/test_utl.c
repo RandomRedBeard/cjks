@@ -47,15 +47,9 @@ void test_sha() {
     assert(cjks_sha1_cmp(sha_cmp1, 1, sha_src, sizeof(sha_src) - 1));
 }
 
-test_st tests[] = {
-    {"encode", test_encode},
-    {"decode", test_decode},
-    {"decode2", test_decode_2},
-    {"sha1", test_sha},
-    {NULL, NULL}
-};
-
-int main() {
-    cjks_run_tests(tests);
-    return 0;
-}
+CJKS_TESTS_ST
+    CJKS_TEST(test_encode)
+    CJKS_TEST(test_decode)
+    CJKS_TEST(test_decode_2)
+    CJKS_TEST(test_sha)
+CJKS_TESTS_END

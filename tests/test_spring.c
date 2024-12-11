@@ -104,16 +104,9 @@ void test_jks_decrypt3() {
     cjks_free(jks);
 }
 
-
-test_st tests[] = {
-    {"decrypt", test_decrypt},
-    {"decrypt_from_jks", test_jks_decrypt},
-    {"decrypt_from_jks2", test_jks_decrypt2},
-    {"decrypt_from_jks3", test_jks_decrypt3},
-    {NULL, NULL}
-};
-
-int main() {
-    cjks_run_tests(tests);
-    return 0;
-}
+CJKS_TESTS_ST
+    CJKS_TEST(test_decrypt)
+    CJKS_TEST(test_jks_decrypt)
+    CJKS_TEST(test_jks_decrypt2)
+    CJKS_TEST(test_jks_decrypt3)
+CJKS_TESTS_END

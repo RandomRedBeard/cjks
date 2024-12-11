@@ -42,18 +42,12 @@ void test_read_be8() {
     cjks_io_mem_free(io);
 }
 
-test_st tests[] = {
-    {"ntohs", test_cjks_ntohs},
-    {"ntohi", test_cjks_ntohi},
-    {"ntohl", test_cjks_ntohll},
-    {"htoni", test_cjks_htoni},
-    {"be2", test_read_be2},
-    {"be4", test_read_be4},
-    {"be8", test_read_be8},
-    {NULL, NULL}
-};
-
-int main() {
-    cjks_run_tests(tests);
-    return 0;
-}
+CJKS_TESTS_ST
+    CJKS_TEST(test_cjks_ntohs)
+    CJKS_TEST(test_cjks_ntohi)
+    CJKS_TEST(test_cjks_ntohll)
+    CJKS_TEST(test_cjks_htoni)
+    CJKS_TEST(test_read_be2)
+    CJKS_TEST(test_read_be4)
+    CJKS_TEST(test_read_be8)
+CJKS_TESTS_END

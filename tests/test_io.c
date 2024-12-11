@@ -40,14 +40,8 @@ void test_fs_be2() {
     cjks_io_fs_free(io);
 }
 
-test_st tests[] = {
-    {"mem", test_mem},
-    {"fs", test_fs},
-    {"fs_be2", test_fs_be2},
-    {NULL, NULL}
-};
-
-int main() {
-    cjks_run_tests(tests);
-    return 0;
-}
+CJKS_TESTS_ST
+    CJKS_TEST(test_mem)
+    CJKS_TEST(test_fs)
+    CJKS_TEST(test_fs_be2)
+CJKS_TESTS_END

@@ -87,13 +87,7 @@ void test_encrypt_dig() {
     
 }
 
-test_st tests[] = {
-    {"decrypt_dig", test_decrpyt_dig},
-    {"encrypt_dig", test_encrypt_dig},
-    {NULL, NULL}
-};
-
-int main() {
-    cjks_run_tests(tests);
-    return 0;
-}
+CJKS_TESTS_ST
+    CJKS_TEST(test_decrpyt_dig)
+    CJKS_TEST(test_encrypt_dig)
+CJKS_TESTS_END
