@@ -81,7 +81,6 @@ cjks* cjks_parse_ex2(const char* pth, char* password, size_t len, const char* en
     return jks;
 }
 
-
 cjks* cjks_get(cjks* jks, const char* alias) {
     while (jks) {
         if (strcmp(jks->alias, alias) == 0) {
@@ -211,11 +210,6 @@ int cjks_decrypt_pk(cjks_pkey* pk, const char* password, size_t len) {
     }
 
     X509_SIG_get0(sig, &algor, &digest);
-
-    int ptype = 0;
-    const void* pval = NULL;
-
-    X509_ALGOR_get0(NULL, &ptype, &pval, algor);
 
     // SUN_JKS Algo check
     if (sizeof(SUN_JKS_ALGO_ID) != OBJ_length(algor->algorithm) || \
