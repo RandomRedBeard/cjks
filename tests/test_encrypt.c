@@ -42,7 +42,7 @@ void test_decrpyt_dig() {
 void test_encrypt_dig() {
     const unsigned char b64iv[] = "24Zy9qgZlnJBNMMDpOEXDIEBJas=";
 
-    unsigned char iv[SHA_DIGEST_LENGTH + 1];
+    unsigned char iv[SHA_DIGEST_LENGTH];
     cjks_b64decode(iv, b64iv, sizeof(b64iv) - 1);
 
     unsigned char password[128];
