@@ -87,7 +87,7 @@ void test_chain2() {
     memcpy(ksp, CJKS_RES_DIR, sizeof(CJKS_RES_DIR));
     strcat(ksp, "/keystore_ca");
 
-    cjks *jks = cjks_parse_ex2(ksp, "changeit", sizeof("changeit") - 1, "US-ASCII"), *jptr = jks;
+    cjks *jks = cjks_parse_ex2(ksp, "password", sizeof("password") - 1, "US-ASCII"), *jptr = jks;
 
     assert(jks);
     assert(jks->tag == CJKS_PRIVATE_KEY_TAG);
@@ -102,10 +102,10 @@ void test_chain2() {
 }
 
 test_st tests[] = {
-    // {"load", test_load},
+    {"load", test_load},
     {"load2", test_load2},
-    // {"chain", test_chain},
-    // {"chain2", test_chain2},
+    {"chain", test_chain},
+    {"chain2", test_chain2},
     {NULL, NULL}
 };
 
