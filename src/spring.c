@@ -1,8 +1,8 @@
 #include "cjks/spring.h"
 
-int cjks_spring_decrypt(EVP_PKEY *pkey, unsigned char *src, size_t slen, unsigned char* dst) {
-    unsigned char salt[] = { 0xde, 0xad, 0xbe, 0xef };
-    unsigned char *strptr = src, *dstr = dst, key[256], keybuf[32];
+int cjks_spring_decrypt(EVP_PKEY *pkey, u_char *src, size_t slen, u_char* dst) {
+    u_char salt[] = { 0xde, 0xad, 0xbe, 0xef };
+    u_char *strptr = src, *dstr = dst, key[256], keybuf[32];
     char keyhex[32];
     int dstrlen, keyhexsz, dlen;
     unsigned short keylen;
@@ -63,7 +63,7 @@ error:
 
 }
 
-int cjks_spring_decrypt2(cjks* jks, unsigned char *src, size_t slen, unsigned char* dst) {
+int cjks_spring_decrypt2(cjks* jks, u_char *src, size_t slen, u_char* dst) {
     EVP_PKEY* pk = cjks_2evp2(jks);
     if (!pk) {
         return -1;

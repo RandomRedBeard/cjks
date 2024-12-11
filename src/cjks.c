@@ -165,7 +165,7 @@ int cjks_parse_pk(cjks_io* io, cjks_pkey* pk) {
 
 
 int cjks_parse_eber(const cjks_buf* eber, X509_SIG** sig) {
-    const unsigned char* dptr = eber->buf;
+    const u_char* dptr = eber->buf;
     if (!ASN1_item_d2i((ASN1_VALUE**)sig, &dptr, (long)eber->len, ASN1_ITEM_rptr(X509_SIG))) {
         return -1;
     }
@@ -173,10 +173,10 @@ int cjks_parse_eber(const cjks_buf* eber, X509_SIG** sig) {
     return 0;
 }
 
-void cjks_sun_jks_crypt(const unsigned char* src, unsigned char* dest, size_t len, unsigned char* iv, const char* password, size_t plen) {
-    unsigned char* ivptr = iv, * ivptrend = iv + SHA_DIGEST_LENGTH;
-    unsigned char* dptr = dest;
-    const unsigned char* sptr = src, * sptrend = src + len;
+void cjks_sun_jks_crypt(const u_char* src, u_char* dest, size_t len, u_char* iv, const char* password, size_t plen) {
+    u_char* ivptr = iv, * ivptrend = iv + SHA_DIGEST_LENGTH;
+    u_char* dptr = dest;
+    const u_char* sptr = src, * sptrend = src + len;
 
     cjks_sha1(iv, 2, password, plen, iv, (size_t)20);
     while (sptr != sptrend) {
@@ -188,9 +188,9 @@ void cjks_sun_jks_crypt(const unsigned char* src, unsigned char* dest, size_t le
     }
 }
 
-int cjks_sun_jks_decrypt(const unsigned char* data, unsigned char* dest, int len, const char* password, size_t plen) {
-    unsigned char iv[SHA_DIGEST_LENGTH];
-    unsigned char sha[SHA_DIGEST_LENGTH];
+int cjks_sun_jks_decrypt(const u_char* data, u_char* dest, int len, const char* password, size_t plen) {
+    u_char iv[SHA_DIGEST_LENGTH];
+    u_char sha[SHA_DIGEST_LENGTH];
     size_t dlen = len - (SHA_DIGEST_LENGTH * 2);
 
     memcpy(iv, data, SHA_DIGEST_LENGTH);
@@ -219,7 +219,7 @@ int cjks_decrypt_pk(cjks_pkey* pk, const char* password, size_t len) {
         return -1;
     }
 
-    unsigned char* pkey_buf = malloc(digest->length - 40);
+    u_char* pkey_buf = malloc(digest->length - 40);
 
     if (!cjks_sun_jks_decrypt(digest->data, pkey_buf, digest->length, password, len)) {
         free(pkey_buf);
@@ -236,7 +236,7 @@ int cjks_decrypt_pk(cjks_pkey* pk, const char* password, size_t len) {
 }
 
 EVP_PKEY* cjks_2evp(const cjks_pkey* pkey) {
-    const unsigned char* ptr = pkey->key.buf;
+    const u_char* ptr = pkey->key.buf;
     return d2i_AutoPrivateKey(NULL, &ptr, (long)pkey->key.len);
 }
 
