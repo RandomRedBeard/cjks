@@ -1,5 +1,4 @@
 #include "cjks/cjks.h"
-#include "private/debug.h"
 
 cjks* cjks_parse(cjks_io* io, const char* password, size_t len) {
     char header[4];
@@ -196,8 +195,6 @@ int cjks_sun_jks_decrypt(const unsigned char* data, unsigned char* dest, int len
 
     memcpy(iv, data, SHA_DIGEST_LENGTH);
     memcpy(sha, data + len - SHA_DIGEST_LENGTH, SHA_DIGEST_LENGTH);
-
-    cjks_b64_print(iv, SHA_DIGEST_LENGTH);
 
     cjks_sun_jks_crypt(data + SHA_DIGEST_LENGTH, dest, dlen, iv, password, plen);
 

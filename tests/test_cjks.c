@@ -69,7 +69,7 @@ void test_chain() {
 
     cjks *jks = cjks_parse_ex2(ksp, "changeit", sizeof("changeit") - 1, "US-ASCII"), *jptr = jks;
 
-    unsigned char* cert = jks->pk->cert_chain->cert.buf;
+    const unsigned char* cert = jks->pk->cert_chain->cert.buf;
     size_t cert_len = jks->pk->cert_chain->cert.len;
 
     X509* x509_cert = NULL;
