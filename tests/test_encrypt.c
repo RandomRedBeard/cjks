@@ -76,6 +76,7 @@ void test_encrypt_dig() {
     ASN1_OCTET_STRING_set(pdigest, fdest, SHA_DIGEST_LENGTH + dlen + SHA_DIGEST_LENGTH);
 
     unsigned char sigbufdump[4096], * sigbufptr = sigbufdump;
+
     i2d_X509_SIG(sig, &sigbufptr);
 
     unsigned char b64sigbuf[4096];
