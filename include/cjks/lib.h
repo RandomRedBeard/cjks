@@ -13,6 +13,4 @@
     #define CJKS_DLL
 #endif // _WIN32
 
-typedef unsigned char u_char;
-
 #endif // Header
