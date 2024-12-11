@@ -74,7 +74,7 @@ int cjks_b64decode(unsigned char* dest, const unsigned char* src, size_t len) {
         dptr = (unsigned char*)memcpy(dptr, &l, cp) + cp;
     }
 
-    return dptr - dest;
+    return (int)(dptr - dest);
 }
 
 int cjks_b64encode(unsigned char* dest, const unsigned char* src, size_t len) {
@@ -89,7 +89,7 @@ int cjks_b64encode(unsigned char* dest, const unsigned char* src, size_t len) {
 
         // Lazy pad calculation
         if (src == padst) {
-            cp = psrce - src;
+            cp = (char)(psrce - src);
         }
 
         // Copy max 3 bytes
@@ -108,7 +108,7 @@ int cjks_b64encode(unsigned char* dest, const unsigned char* src, size_t len) {
         }
     }
 
-    return dptr - dest;
+    return (int)(dptr - dest);
 }
 
 char cjks_v2a(int c) {
