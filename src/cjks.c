@@ -166,7 +166,7 @@ int cjks_parse_pk(cjks_io* io, cjks_pkey* pk) {
 
 int cjks_parse_eber(const cjks_buf* eber, X509_SIG** sig) {
     const unsigned char* dptr = eber->buf;
-    if (!ASN1_item_d2i((ASN1_VALUE**)sig, &dptr, (long)eber->len, ASN1_ITEM_rptr(X509_SIG))) {
+    if (!d2i_X509_SIG(sig, &dptr, (long)eber->len)) {
         return -1;
     }
 
