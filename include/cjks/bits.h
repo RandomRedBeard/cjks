@@ -3,33 +3,25 @@
 
 #ifdef HAS_ENDIAN_H
     #include <endian.h>
-    #define cjks_ntohs_f be16toh
-    #define cjks_ntohi_f be32toh
-    #define cjks_ntohll_f be64toh
+    #define cjks_ntohs be16toh
+    #define cjks_ntohi be32toh
+    #define cjks_ntohll be64toh
 
-    #define cjks_htoni_f htobe32
+    #define cjks_htoni htobe32
 #elif defined _WIN32 // Windows
     #include <WinSock2.h>
-    #define cjks_ntohs_f ntohs
-    #define cjks_ntohi_f ntohl
-    #define cjks_ntohll_f ntohll
+    #define cjks_ntohs ntohs
+    #define cjks_ntohi ntohl
+    #define cjks_ntohll ntohll
 
-    #define cjks_htoni_f htonl
+    #define cjks_htoni htonl
 #elif defined __APPLE__ // No endian.h and not win32
     #include <libkern/OSByteOrder.h>
-    #define cjks_ntohs_f OSSwapBigToHostInt16
-    #define cjks_ntohi_f OSSwapBigToHostInt32
-    #define cjks_ntohll_f OSSwapBigToHostInt64
+    #define cjks_ntohs OSSwapBigToHostInt16
+    #define cjks_ntohi OSSwapBigToHostInt32
+    #define cjks_ntohll OSSwapBigToHostInt64
 
-    #define cjks_htoni_f OSSwapHostToBigInt32
-#endif 
-
-#include <cjks/lib.h>
-
-CJKS_DLL unsigned short cjks_ntohs(const void* v);
-CJKS_DLL unsigned int cjks_ntohi(const void* v);
-CJKS_DLL unsigned long long cjks_ntohll(const void* v);
-
-CJKS_DLL unsigned int cjks_htoni(const void* v);
+    #define cjks_htoni OSSwapHostToBigInt32
+#endif
 
 #endif

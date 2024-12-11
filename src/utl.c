@@ -90,7 +90,7 @@ int cjks_b64decode(unsigned char* dest, const unsigned char* src, size_t len) {
         }
 
         // Covers BigE case
-        l = cjks_ntohi(&l);
+        l = cjks_ntohi(l);
         cp = (pcnt == 0 ? 3 : 3 - pcnt);
         dptr = (unsigned char*)memcpy(dptr, &l, cp) + cp;
     }
@@ -134,7 +134,7 @@ int cjks_b64encode(unsigned char* dest, const unsigned char* src, size_t len) {
         l = 0;
         memcpy(&l, src, cp);
         src += cp;
-        l = cjks_htoni(&l);
+        l = cjks_htoni(l);
         for (j = 0; j < cp + 1; j++) {
             *dptr++ = base64_table[l >> 26];
             l = l << 6;
