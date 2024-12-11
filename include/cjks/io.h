@@ -46,8 +46,15 @@ CJKS_DLL unsigned short cjks_io_read_be2(cjks_io *io);
 CJKS_DLL unsigned int cjks_io_read_be4(cjks_io *io);
 CJKS_DLL unsigned long long cjks_io_read_be8(cjks_io *io);
 
+CJKS_DLL int cjks_io_write_be2(cjks_io *io, unsigned short s);
+CJKS_DLL int cjks_io_write_be4(cjks_io *io, unsigned int i);
+CJKS_DLL int cjks_io_write_be8(cjks_io *io, unsigned long long l);
+
 CJKS_DLL char *cjks_io_aread_utf(cjks_io *io);
 CJKS_DLL int cjks_io_aread_data(cjks_io* io, cjks_buf *buf);
+
+CJKS_DLL int cjks_io_write_utf(cjks_io* io, const char* utf, size_t len);
+CJKS_DLL int cjks_io_write_data(cjks_io*io, cjks_buf* buf);
 
 CJKS_DLL cjks_io *cjks_io_fs_new(FILE *);
 CJKS_DLL void cjks_io_fs_free(cjks_io* io);

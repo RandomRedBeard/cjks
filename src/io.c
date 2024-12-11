@@ -47,6 +47,21 @@ unsigned long long cjks_io_read_be8(cjks_io *io) {
     return cjks_ntohll(l);
 }
 
+int cjks_io_write_be2(cjks_io* io, unsigned short s) {
+    s = cjks_htons(s);
+    return cjks_io_write(io, &s, 2);
+}
+
+int cjks_io_write_be4(cjks_io* io, unsigned int i) {
+    i = cjks_htoni(i);
+    return cjks_io_write(io, &i, 4);
+}
+
+int cjks_io_write_be8(cjks_io* io, unsigned long long l) {
+    l = cjks_htonll(l);
+    return cjks_io_write(io, &l, 8);
+}
+
 char *cjks_io_aread_utf(cjks_io *io) {
     unsigned short s = cjks_io_read_be2(io);
     char *v = malloc(s + 1);
@@ -60,6 +75,18 @@ int cjks_io_aread_data(cjks_io* io, cjks_buf* buf) {
     buf->buf = malloc(i);
     cjks_io_read(io, buf->buf, i);
     buf->len = i;
+    return i;
+}
+
+int cjks_io_write_utf(cjks_io* io, const char* utf, size_t len) {
+    int i = cjks_io_write_be2(io, (unsigned short)len);
+    i += cjks_io_write(io, utf, len);
+    return i;
+}
+
+int cjks_io_write_data(cjks_io* io, cjks_buf* buf) {
+    int i = cjks_io_write_be4(io, (unsigned int)buf->len);
+    i += cjks_io_write(io, buf->buf, buf->len);
     return i;
 }
 

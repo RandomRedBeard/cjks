@@ -29,6 +29,8 @@ typedef struct cjks_pkey_st {
     cjks_buf encrypted_ber;
     cjks_buf key;
     cjks_ca *cert_chain;
+    // chain len
+    // iv?
 } cjks_pkey;
 
 typedef struct cjks_entry_st {
