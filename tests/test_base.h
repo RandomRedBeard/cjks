@@ -28,13 +28,6 @@ _CrtSetReportFile(_CRT_WARN, _CRTDBG_FILE_STDOUT);
 
 #include <cjks/io.h>
 
-/**
- * @brief Read all bytes from file path into buffer
- * 
- * @param path 
- * @param buf 
- * @return int 
- */
 static int cjks_io_read_all(const char* path, cjks_buf* buf) {
     FILE *fp = fopen(path, "rb");
     if (!fp) {
@@ -51,6 +44,11 @@ static int cjks_io_read_all(const char* path, cjks_buf* buf) {
     return 0;
 }
 
+static int cjks_read_from_res(const char* path, cjks_buf* buf) {
+    char rpath[128] = CJKS_RES_DIR;
+    strcat(rpath, path);
+    return cjks_io_read_all(rpath, buf);
+}
 
 typedef void(*test_fn)();
 typedef struct {

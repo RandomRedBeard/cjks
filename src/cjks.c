@@ -212,6 +212,11 @@ int cjks_decrypt_pk(cjks_pkey* pk, const char* password, size_t len) {
 
     X509_SIG_get0(sig, &algor, &digest);
 
+    int ptype = 0;
+    const void* pval = NULL;
+
+    X509_ALGOR_get0(NULL, &ptype, &pval, algor);
+
     // SUN_JKS Algo check
     if (sizeof(SUN_JKS_ALGO_ID) != OBJ_length(algor->algorithm) || \
         memcmp(SUN_JKS_ALGO_ID, OBJ_get0_data(algor->algorithm), sizeof(SUN_JKS_ALGO_ID)) != 0) {
