@@ -111,7 +111,19 @@ int cjks_io_mem_read(cjks_io *io, void *buf, size_t len) {
     return (int)len;
 }
 
-cjks_io_vt cjks_io_mem_vt = { cjks_io_mem_read, NULL, NULL };
+int cjks_io_mem_write(cjks_io* io, const void* buf, size_t len) {
+    struct cjks_io_mem_st *iom = (struct cjks_io_mem_st *)io;
+    if (iom->buf.len < len) {
+        return -1;
+    }
+
+    iom->buf.buf = (char*)memcpy(iom->buf.buf, buf, len) + len;
+    iom->buf.len -= len;
+
+    return len;
+}
+
+cjks_io_vt cjks_io_mem_vt = { cjks_io_mem_read, cjks_io_mem_write, NULL };
 
 cjks_io* cjks_io_mem_new(void* buf, size_t len) {
     struct cjks_io_mem_st* io = malloc(sizeof(struct cjks_io_mem_st));

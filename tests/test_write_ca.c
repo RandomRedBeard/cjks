@@ -1,19 +1,34 @@
 #include "test_base.h"
 #include <cjks/cjks.h>
 
+int cjks_io_write_be2(cjks_io* io, unsigned short s) {
+    s = cjks_htons(s);
+    return cjks_io_write(io, &s, 2);
+}
+
+int cjks_io_write_be4(cjks_io* io, unsigned int i) {
+    i = cjks_htoni(i);
+    return cjks_io_write(io, &i, 4);
+}
+
+int cjks_io_write_utf(cjks_io* io, const char* utf, size_t len) {
+    int i = cjks_io_write_be2(io, (unsigned short)len);
+    i += cjks_io_write(io, utf, len);
+    return i;
+}
+
+int cjks_io_write_data(cjks_io* io, cjks_buf* buf) {
+    int i = cjks_io_write_be4(io, (unsigned int)buf->len);
+    i += cjks_io_write(io, buf->buf, buf->len);
+    return i;
+}
+
 int cjks_write_ca(cjks_ca* ca, unsigned char* buf) {
-    unsigned char* pbuf = buf;
-    unsigned short len = (unsigned short)strlen(ca->cert_type);
-    unsigned short nlen = cjks_htons(len);
-    pbuf = (unsigned char*)memcpy(pbuf, &nlen, 2) + 2;
-    pbuf = (unsigned char*)memcpy(pbuf, ca->cert_type, len) + len;
+    cjks_io* io = cjks_io_mem_new(buf, 2048);
 
-    unsigned int clen = (unsigned int)ca->cert.len;
-    clen = cjks_htoni(clen);
-    pbuf = (unsigned char*)memcpy(pbuf, &clen, 4) + 4;
-    pbuf = (unsigned char*)memcpy(pbuf, ca->cert.buf, ca->cert.len) + ca->cert.len;
-
-    return pbuf - buf;
+    int i = cjks_io_write_utf(io, ca->cert_type, strlen(ca->cert_type));
+    i += cjks_io_write_data(io, &ca->cert);
+    return i;
 }
 
 void test_ca_write() {
@@ -32,6 +47,7 @@ void test_ca_write() {
     cjks_parse_ca(io, cmp);
 
     assert(strcmp(cmp->cert_type, jptr->ca->cert_type) == 0);
+    assert(memcmp(cmp->cert.buf, jptr->ca->cert.buf, cmp->cert.len) == 0);
 }
 
 CJKS_TESTS_ST
