@@ -42,6 +42,7 @@ typedef struct cjks_entry_st {
         cjks_pkey* pk;
         cjks_ca* ca;
     };
+    uint32 n;
     struct cjks_entry_st *next;
 } cjks;
 

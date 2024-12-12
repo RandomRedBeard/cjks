@@ -25,6 +25,7 @@ cjks* cjks_parse(cjks_io* io, const char* password, size_t len) {
         chain = cjks_new(tag);
         chain->alias = cjks_io_aread_utf(io);
         chain->ts = cjks_io_read_be8(io);
+        chain->n = i;
 
         if (tag == CJKS_PRIVATE_KEY_TAG) {
             chain->pk = cjks_pk_new();
