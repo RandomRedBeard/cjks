@@ -21,7 +21,7 @@ void test_ca_write() {
     uchar ca_buf[2048];
     int ca_buf_len = cjks_write_ca(jptr->ca, ca_buf);
 
-    cjks_ca* cmp = cjks_ca_new(0);
+    cjks_ca* cmp = cjks_ca_new();
     cjks_io* io = cjks_io_mem_new(ca_buf, ca_buf_len);
     cjks_parse_ca(io, cmp);
 
