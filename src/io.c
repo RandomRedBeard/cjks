@@ -4,7 +4,9 @@
  * BUF functions
  */
 void cjks_buf_clear(const cjks_buf* buf) {
-    free(buf->buf);
+    if (buf->buf) {
+        free(buf->buf);
+    }
 }
 
 /**

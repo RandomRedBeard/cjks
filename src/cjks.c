@@ -207,6 +207,7 @@ int cjks_decrypt_pk(cjks_pkey* pk, const char* password, size_t len) {
     const X509_ALGOR* algor = NULL;
     const ASN1_OCTET_STRING* digest = NULL;
     if (cjks_parse_eber(&pk->encrypted_ber, &sig) < 0) {
+        perror("EBER parse failed");
         return -1;
     }
 
@@ -216,6 +217,7 @@ int cjks_decrypt_pk(cjks_pkey* pk, const char* password, size_t len) {
     if (sizeof(SUN_JKS_ALGO_ID) != OBJ_length(algor->algorithm) || \
         memcmp(SUN_JKS_ALGO_ID, OBJ_get0_data(algor->algorithm), sizeof(SUN_JKS_ALGO_ID)) != 0) {
         X509_SIG_free(sig);
+        perror("SUN_JKS_ALGO wrong");
         return -1;
     }
 
@@ -224,6 +226,7 @@ int cjks_decrypt_pk(cjks_pkey* pk, const char* password, size_t len) {
     if (!cjks_sun_jks_decrypt(digest->data, pkey_buf, digest->length, password, len)) {
         free(pkey_buf);
         X509_SIG_free(sig);
+        perror("sun_jks_dec failed");
         return -1;
     }
 
