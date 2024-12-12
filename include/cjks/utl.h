@@ -13,7 +13,7 @@
 static const char cjks_hex_chars[] = "0123456789abcdef";
 static const char cjks_base64_chars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
-CJKS_DLL int cjks_b64decode(uchar *dest, const unsigned char *src, size_t len);
+CJKS_DLL int cjks_b64decode(uchar *dest, const uchar *src, size_t len);
 
 /**
  * @brief b64 encode. src and dest cannot overlap
@@ -22,7 +22,7 @@ CJKS_DLL int cjks_b64decode(uchar *dest, const unsigned char *src, size_t len);
  * @param src 
  * @param len 
  */
-CJKS_DLL int cjks_b64encode(uchar *dest, const unsigned char *src, size_t len);
+CJKS_DLL int cjks_b64encode(uchar *dest, const uchar *src, size_t len);
 
 /**
  * @brief bin2hex. src and dest cannot overlap

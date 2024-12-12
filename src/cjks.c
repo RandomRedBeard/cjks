@@ -173,7 +173,7 @@ int cjks_parse_eber(const cjks_buf* eber, X509_SIG** sig) {
     return 0;
 }
 
-void cjks_sun_jks_crypt(const uchar* src, unsigned char* dest, size_t len, unsigned char* iv, const char* password, size_t plen) {
+void cjks_sun_jks_crypt(const uchar* src, uchar* dest, size_t len, uchar* iv, const char* password, size_t plen) {
     uchar* ivptr = iv, * ivptrend = iv + SHA_DIGEST_LENGTH;
     uchar* dptr = dest;
     const uchar* sptr = src, * sptrend = src + len;
@@ -188,7 +188,7 @@ void cjks_sun_jks_crypt(const uchar* src, unsigned char* dest, size_t len, unsig
     }
 }
 
-int cjks_sun_jks_decrypt(const uchar* data, unsigned char* dest, int len, const char* password, size_t plen) {
+int cjks_sun_jks_decrypt(const uchar* data, uchar* dest, int len, const char* password, size_t plen) {
     uchar iv[SHA_DIGEST_LENGTH];
     uchar sha[SHA_DIGEST_LENGTH];
     size_t dlen = len - (SHA_DIGEST_LENGTH * 2);

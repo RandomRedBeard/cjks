@@ -9,7 +9,7 @@
 #include <cjks/lib.h>
 #include <cjks/cjks.h>
 
-CJKS_DLL int cjks_spring_decrypt(EVP_PKEY *pkey, uchar *src, size_t slen, unsigned char* dst);
-CJKS_DLL int cjks_spring_decrypt2(cjks* jks, uchar *src, size_t slen, unsigned char* dst);
+CJKS_DLL int cjks_spring_decrypt(EVP_PKEY *pkey, uchar *src, size_t slen, uchar* dst);
+CJKS_DLL int cjks_spring_decrypt2(cjks* jks, uchar *src, size_t slen, uchar* dst);
 
 #endif

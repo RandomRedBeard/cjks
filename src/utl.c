@@ -26,7 +26,7 @@ char cjks_b64i(char c) {
     }
 }
 
-int cjks_b64decode(uchar* dest, const unsigned char* src, size_t len) {
+int cjks_b64decode(uchar* dest, const uchar* src, size_t len) {
     const uchar* psrce = src + len;
     uchar* dptr = dest;
 
@@ -77,7 +77,7 @@ int cjks_b64decode(uchar* dest, const unsigned char* src, size_t len) {
     return (int)(dptr - dest);
 }
 
-int cjks_b64encode(uchar* dest, const unsigned char* src, size_t len) {
+int cjks_b64encode(uchar* dest, const uchar* src, size_t len) {
     const uchar* psrce = src + len;
     const uchar* padst = psrce - (len % 3);
     uchar* dptr = dest;
