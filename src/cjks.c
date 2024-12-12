@@ -9,19 +9,19 @@ cjks* cjks_parse(cjks_io* io, const char* password, size_t len) {
         return NULL;
     }
 
-    unsigned int version = cjks_io_read_be4(io);
+    uint32 version = cjks_io_read_be4(io);
 
     // Only supporting v2
     if (version != 2) {
         return NULL;
     }
 
-    unsigned int entry_count = cjks_io_read_be4(io);
+    uint32 entry_count = cjks_io_read_be4(io);
 
     cjks* root = NULL, * chain = NULL;
 
-    for (unsigned int i = 0; i < entry_count; i++) {
-        unsigned int tag = cjks_io_read_be4(io);
+    for (uint32 i = 0; i < entry_count; i++) {
+        uint32 tag = cjks_io_read_be4(io);
         chain = cjks_new(tag);
         chain->alias = cjks_io_aread_utf(io);
         chain->ts = cjks_io_read_be8(io);
@@ -149,10 +149,10 @@ void cjks_pk_free(cjks_pkey* pk) {
 
 int cjks_parse_pk(cjks_io* io, cjks_pkey* pk) {
     cjks_io_aread_data(io, &pk->encrypted_ber);
-    unsigned int chain_len = cjks_io_read_be4(io);
+    uint32 chain_len = cjks_io_read_be4(io);
 
     cjks_ca* chain = NULL, * root = NULL;
-    for (unsigned int i = 0; i < chain_len; i++) {
+    for (uint32 i = 0; i < chain_len; i++) {
         chain = cjks_ca_new();
         cjks_parse_ca(io, chain);
         chain->next = root;
@@ -164,7 +164,7 @@ int cjks_parse_pk(cjks_io* io, cjks_pkey* pk) {
 
 
 int cjks_parse_eber(const cjks_buf* eber, X509_SIG** sig) {
-    const unsigned char* dptr = eber->buf;
+    const uchar* dptr = eber->buf;
     if (!d2i_X509_SIG(sig, &dptr, (long)eber->len)) {
         return -1;
     }
@@ -172,10 +172,10 @@ int cjks_parse_eber(const cjks_buf* eber, X509_SIG** sig) {
     return 0;
 }
 
-void cjks_sun_jks_crypt(const unsigned char* src, unsigned char* dest, size_t len, unsigned char* iv, const char* password, size_t plen) {
-    unsigned char* ivptr = iv, * ivptrend = iv + SHA_DIGEST_LENGTH;
-    unsigned char* dptr = dest;
-    const unsigned char* sptr = src, * sptrend = src + len;
+void cjks_sun_jks_crypt(const uchar* src, unsigned char* dest, size_t len, unsigned char* iv, const char* password, size_t plen) {
+    uchar* ivptr = iv, * ivptrend = iv + SHA_DIGEST_LENGTH;
+    uchar* dptr = dest;
+    const uchar* sptr = src, * sptrend = src + len;
 
     cjks_sha1(iv, 2, password, plen, iv, (size_t)20);
     while (sptr != sptrend) {
@@ -187,9 +187,9 @@ void cjks_sun_jks_crypt(const unsigned char* src, unsigned char* dest, size_t le
     }
 }
 
-int cjks_sun_jks_decrypt(const unsigned char* data, unsigned char* dest, int len, const char* password, size_t plen) {
-    unsigned char iv[SHA_DIGEST_LENGTH];
-    unsigned char sha[SHA_DIGEST_LENGTH];
+int cjks_sun_jks_decrypt(const uchar* data, unsigned char* dest, int len, const char* password, size_t plen) {
+    uchar iv[SHA_DIGEST_LENGTH];
+    uchar sha[SHA_DIGEST_LENGTH];
     size_t dlen = len - (SHA_DIGEST_LENGTH * 2);
 
     memcpy(iv, data, SHA_DIGEST_LENGTH);
@@ -218,7 +218,7 @@ int cjks_decrypt_pk(cjks_pkey* pk, const char* password, size_t len) {
         return -1;
     }
 
-    unsigned char* pkey_buf = malloc(digest->length - 40);
+    uchar* pkey_buf = malloc(digest->length - 40);
 
     if (!cjks_sun_jks_decrypt(digest->data, pkey_buf, digest->length, password, len)) {
         free(pkey_buf);
@@ -235,7 +235,7 @@ int cjks_decrypt_pk(cjks_pkey* pk, const char* password, size_t len) {
 }
 
 EVP_PKEY* cjks_2evp(const cjks_pkey* pkey) {
-    const unsigned char* ptr = pkey->key.buf;
+    const uchar* ptr = pkey->key.buf;
     return d2i_AutoPrivateKey(NULL, &ptr, (long)pkey->key.len);
 }
 

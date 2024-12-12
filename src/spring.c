@@ -1,11 +1,11 @@
 #include "cjks/spring.h"
 
-int cjks_spring_decrypt(EVP_PKEY *pkey, unsigned char *src, size_t slen, unsigned char* dst) {
-    unsigned char salt[] = { 0xde, 0xad, 0xbe, 0xef };
-    unsigned char *strptr = src, *dstr = dst, key[256], keybuf[32];
+int cjks_spring_decrypt(EVP_PKEY *pkey, uchar *src, size_t slen, unsigned char* dst) {
+    uchar salt[] = { 0xde, 0xad, 0xbe, 0xef };
+    uchar *strptr = src, *dstr = dst, key[256], keybuf[32];
     char keyhex[32];
     int dstrlen, keyhexsz, dlen;
-    unsigned short keylen;
+    uint16 keylen;
     size_t keysz = sizeof(key);
 
     EVP_PKEY_CTX *evp_ctx = NULL;
@@ -14,7 +14,7 @@ int cjks_spring_decrypt(EVP_PKEY *pkey, unsigned char *src, size_t slen, unsigne
     if ((dlen = cjks_b64decode(src, src, slen)) < 0) {
         goto error;
     }
-    keylen = cjks_ntohs(*(unsigned short*)strptr);
+    keylen = cjks_ntohs(*(uint16*)strptr);
     strptr += 2;
 
     evp_ctx = EVP_PKEY_CTX_new(pkey, NULL);
@@ -63,7 +63,7 @@ error:
 
 }
 
-int cjks_spring_decrypt2(cjks* jks, unsigned char *src, size_t slen, unsigned char* dst) {
+int cjks_spring_decrypt2(cjks* jks, uchar *src, size_t slen, unsigned char* dst) {
     EVP_PKEY* pk = cjks_2evp2(jks);
     if (!pk) {
         return -1;

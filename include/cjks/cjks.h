@@ -17,7 +17,7 @@
 #define CJKS_TRUSTED_CERT_TAG 2
 
 static const char cjks_jks_magic_number[] = "\xFE\xED\xFE\xED";
-static const unsigned char SUN_JKS_ALGO_ID[] = { 43,6,1,4,1,42,2,17,1,1 };
+static const uchar SUN_JKS_ALGO_ID[] = { 43,6,1,4,1,42,2,17,1,1 };
 
 typedef struct cjks_ca_st {
     char *cert_type;
@@ -36,7 +36,7 @@ typedef struct cjks_pkey_st {
 typedef struct cjks_entry_st {
     int tag; // PKEY or CA
     char *alias;
-    unsigned long long ts;
+    uint64 ts;
     union {
         cjks_pkey* pk;
         cjks_ca* ca;
@@ -57,8 +57,8 @@ CJKS_DLL cjks_pkey* cjks_pk_new();
 CJKS_DLL void cjks_pk_free(cjks_pkey* pk);
 CJKS_DLL int cjks_parse_pk(cjks_io* io, cjks_pkey* pk);
 CJKS_DLL int cjks_parse_eber(const cjks_buf *eber, X509_SIG** sig);
-CJKS_DLL void cjks_sun_jks_crypt(const unsigned char *src, unsigned char *dest, size_t len, unsigned char *iv, const char *password, size_t plen);
-CJKS_DLL int cjks_sun_jks_decrypt(const unsigned char *data, unsigned char *dest, int dlen, const char *password, size_t plen);
+CJKS_DLL void cjks_sun_jks_crypt(const uchar *src, unsigned char *dest, size_t len, unsigned char *iv, const char *password, size_t plen);
+CJKS_DLL int cjks_sun_jks_decrypt(const uchar *data, unsigned char *dest, int dlen, const char *password, size_t plen);
 CJKS_DLL int cjks_decrypt_pk(cjks_pkey* pk, const char* password, size_t len);
 CJKS_DLL EVP_PKEY *cjks_2evp(const cjks_pkey *pkey);
 CJKS_DLL EVP_PKEY *cjks_2evp2(const cjks* jks);

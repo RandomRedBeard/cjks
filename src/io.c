@@ -29,41 +29,41 @@ int cjks_io_close(cjks_io *io) {
     return -1;
 }
 
-unsigned short cjks_io_read_be2(cjks_io *io) {
-    unsigned short s = 0;
+uint16 cjks_io_read_be2(cjks_io *io) {
+    uint16 s = 0;
     cjks_io_read(io, &s, sizeof(s));
     return cjks_ntohs(s);
 }
 
-unsigned int cjks_io_read_be4(cjks_io *io) {
-    unsigned int i = 0;
+uint32 cjks_io_read_be4(cjks_io *io) {
+    uint32 i = 0;
     cjks_io_read(io, &i, sizeof(i));
     return cjks_ntohi(i);
 }
 
-unsigned long long cjks_io_read_be8(cjks_io *io) {
-    unsigned long long l = 0;
+uint64 cjks_io_read_be8(cjks_io *io) {
+    uint64 l = 0;
     cjks_io_read(io, &l, sizeof(l));
     return cjks_ntohll(l);
 }
 
-int cjks_io_write_be2(cjks_io* io, unsigned short s) {
+int cjks_io_write_be2(cjks_io* io, uint16 s) {
     s = cjks_htons(s);
     return cjks_io_write(io, &s, 2);
 }
 
-int cjks_io_write_be4(cjks_io* io, unsigned int i) {
+int cjks_io_write_be4(cjks_io* io, uint32 i) {
     i = cjks_htoni(i);
     return cjks_io_write(io, &i, 4);
 }
 
-int cjks_io_write_be8(cjks_io* io, unsigned long long l) {
+int cjks_io_write_be8(cjks_io* io, uint64 l) {
     l = cjks_htonll(l);
     return cjks_io_write(io, &l, 8);
 }
 
 char *cjks_io_aread_utf(cjks_io *io) {
-    unsigned short s = cjks_io_read_be2(io);
+    uint16 s = cjks_io_read_be2(io);
     char *v = malloc(s + 1);
     cjks_io_read(io, v, s);
     *(v + s) = 0;
@@ -71,7 +71,7 @@ char *cjks_io_aread_utf(cjks_io *io) {
 }
 
 int cjks_io_aread_data(cjks_io* io, cjks_buf* buf) {
-    unsigned int i = cjks_io_read_be4(io);
+    uint32 i = cjks_io_read_be4(io);
     buf->buf = malloc(i);
     cjks_io_read(io, buf->buf, i);
     buf->len = i;
@@ -79,13 +79,13 @@ int cjks_io_aread_data(cjks_io* io, cjks_buf* buf) {
 }
 
 int cjks_io_write_utf(cjks_io* io, const char* utf, size_t len) {
-    int i = cjks_io_write_be2(io, (unsigned short)len);
+    int i = cjks_io_write_be2(io, (uint16)len);
     i += cjks_io_write(io, utf, len);
     return i;
 }
 
 int cjks_io_write_data(cjks_io* io, cjks_buf* buf) {
-    int i = cjks_io_write_be4(io, (unsigned int)buf->len);
+    int i = cjks_io_write_be4(io, (uint32)buf->len);
     i += cjks_io_write(io, buf->buf, buf->len);
     return i;
 }

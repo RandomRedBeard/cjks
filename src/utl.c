@@ -26,11 +26,11 @@ char cjks_b64i(char c) {
     }
 }
 
-int cjks_b64decode(unsigned char* dest, const unsigned char* src, size_t len) {
-    const unsigned char* psrce = src + len;
-    unsigned char* dptr = dest;
+int cjks_b64decode(uchar* dest, const unsigned char* src, size_t len) {
+    const uchar* psrce = src + len;
+    uchar* dptr = dest;
 
-    unsigned int l, i;
+    uint32 l, i;
     char index, pcnt = 0, cp;
     while (src != psrce) {
         l = 0;
@@ -71,18 +71,18 @@ int cjks_b64decode(unsigned char* dest, const unsigned char* src, size_t len) {
         // Covers BigE case
         l = cjks_ntohi(l);
         cp = (pcnt == 0 ? 3 : 3 - pcnt);
-        dptr = (unsigned char*)memcpy(dptr, &l, cp) + cp;
+        dptr = (uchar*)memcpy(dptr, &l, cp) + cp;
     }
 
     return (int)(dptr - dest);
 }
 
-int cjks_b64encode(unsigned char* dest, const unsigned char* src, size_t len) {
-    const unsigned char* psrce = src + len;
-    const unsigned char* padst = psrce - (len % 3);
-    unsigned char* dptr = dest;
+int cjks_b64encode(uchar* dest, const unsigned char* src, size_t len) {
+    const uchar* psrce = src + len;
+    const uchar* padst = psrce - (len % 3);
+    uchar* dptr = dest;
 
-    unsigned int l;
+    uint32 l;
     int j;
     char cp = 3;
     while (src != psrce) {
@@ -104,7 +104,7 @@ int cjks_b64encode(unsigned char* dest, const unsigned char* src, size_t len) {
 
         if (cp < 3) {
             cp = 3 - cp;
-            dptr = (unsigned char*)memcpy(dptr, "==", cp) + cp;
+            dptr = (uchar*)memcpy(dptr, "==", cp) + cp;
         }
     }
 
@@ -115,7 +115,7 @@ char cjks_v2a(int c) {
     return cjks_hex_chars[c];
 }
 
-int cjks_hex(char *dest, const unsigned char *src, size_t len) {
+int cjks_hex(char *dest, const uchar *src, size_t len) {
     for (size_t i = 0; i < len; i++) {
         *dest++ = cjks_v2a((src[i] >> 4) & 0x0F);
         *dest++ = cjks_v2a((src[i]) & 0x0F);
@@ -132,7 +132,7 @@ int cjks_sha1(void* out, int n, ...) {
 }
 
 int cjks_vsha1(void *out, int n, va_list args) {
-    unsigned int olen;
+    uint32 olen;
     EVP_MD_CTX *ctx = EVP_MD_CTX_new();
     void *d = NULL;
     size_t len;
@@ -163,7 +163,7 @@ int cjks_vsha1(void *out, int n, va_list args) {
 }
 
 int cjks_sha1_cmp(const void* sha1, int n, ...) {
-    unsigned char sha2[SHA_DIGEST_LENGTH];
+    uchar sha2[SHA_DIGEST_LENGTH];
     va_list args;
     va_start(args, n);
     if (cjks_vsha1(sha2, n, args) < 0) {
