@@ -147,7 +147,7 @@ int cjks_io_mem_write(cjks_io* io, const void* buf, size_t len) {
     iom->buf.buf = (char*)memcpy(iom->buf.buf, buf, len) + len;
     iom->buf.len -= len;
 
-    return len;
+    return (int)len;
 }
 
 cjks_io_vt cjks_io_mem_vt = { cjks_io_mem_read, cjks_io_mem_write, NULL };
