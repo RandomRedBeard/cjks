@@ -1,7 +1,7 @@
 #include "test_base.h"
 #include <cjks/cjks.h>
 
-int cjks_write_ca(cjks_ca* ca, unsigned char* buf) {
+int cjks_write_ca(cjks_ca* ca, uchar* buf) {
     cjks_io* io = cjks_io_mem_new(buf, 2048);
 
     int i = cjks_io_write_utf(io, ca->cert_type, strlen(ca->cert_type));
@@ -18,10 +18,10 @@ void test_ca_write() {
     jptr = cjks_get(jks, "c1cert");
     assert(jptr->tag == CJKS_TRUSTED_CERT_TAG);
 
-    unsigned char ca_buf[2048];
+    uchar ca_buf[2048];
     int ca_buf_len = cjks_write_ca(jptr->ca, ca_buf);
 
-    cjks_ca* cmp = cjks_ca_new();
+    cjks_ca* cmp = cjks_ca_new(0);
     cjks_io* io = cjks_io_mem_new(ca_buf, ca_buf_len);
     cjks_parse_ca(io, cmp);
 

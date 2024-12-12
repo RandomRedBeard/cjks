@@ -5,7 +5,7 @@
 
 void validate_jks(cjks *jks) {
     cjks *jptr = jks;
-    unsigned int cnt = 0;
+    uint32 cnt = 0;
     while (jptr) {
         printf("%d - %s\n", jptr->tag, jptr->alias);
         jptr = jptr->next;
@@ -22,7 +22,7 @@ void validate_jks(cjks *jks) {
     cjks_buf dkey = CJKS_BUF_INIT;
     cjks_read_from_res("/d.key", &dkey);
 
-    unsigned char *mk_key = malloc(2048);
+    uchar *mk_key = malloc(2048);
     int mk_key_len = cjks_b64encode(mk_key, mk->pk->key.buf, mk->pk->key.len);
 
     assert(memcmp(dkey.buf, mk_key, dkey.len) == 0);
@@ -62,7 +62,7 @@ void test_chain() {
 
     cjks *jks = cjks_parse_ex2(ksp, "changeit", sizeof("changeit") - 1, "US-ASCII"), *jptr = jks;
 
-    const unsigned char* cert = jks->pk->cert_chain->cert.buf;
+    const uchar* cert = jks->pk->cert_chain->cert.buf;
     size_t cert_len = jks->pk->cert_chain->cert.len;
 
     X509* x509_cert = NULL;
@@ -86,7 +86,7 @@ void test_chain2() {
 
     cjks_ca* ca = jks->pk->cert_chain;
     while (ca) {
-        printf("Count\n");
+        printf("Count - %d\n", ca->n);
         ca = ca->next;
     }
 

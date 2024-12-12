@@ -19,7 +19,7 @@ void test_decrypt() {
 
     assert(es_buf.len != 0);
 
-    const unsigned char* pkey = pk_buf.buf;
+    const uchar* pkey = pk_buf.buf;
     EVP_PKEY* pk = d2i_AutoPrivateKey(NULL, &pkey, pk_buf.len);
     assert(pk);
 

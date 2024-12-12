@@ -33,7 +33,7 @@ void test_fs_be2() {
     char be2[] = {0x0, 0x1};
     cjks_io_write(io, be2, 2);
     rewind(fp);
-    unsigned short s = cjks_io_read_be2(io);
+    uint16 s = cjks_io_read_be2(io);
     assert(s == 1);
 
     cjks_io_close(io);

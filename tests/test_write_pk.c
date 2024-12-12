@@ -7,13 +7,13 @@ int cjks_write_ca(cjks_io* io, cjks_ca* ca) {
     return i;
 }
 
-int cjks_write_pk(cjks_pkey* pk, unsigned char* buf) {
+int cjks_write_pk(cjks_pkey* pk, uchar* buf) {
     // <uint32 eber len><eber><uint32 chain len><uint16 cert type len><cert type><uint32 cert len><cert>...
     cjks_io* io = cjks_io_mem_new(buf, 4096);
     int i = cjks_io_write_data(io, &pk->encrypted_ber);
-    // Cheat
-    unsigned int clen = 0;
-    unsigned char* clenptr = buf + i;
+    
+    // First ca in chain has length
+    uint32 clen = cjks_htoni(pk->cert_chain->n);
     i += cjks_io_write(io, &clen, 4);
 
     cjks_ca* ca = pk->cert_chain;
@@ -22,9 +22,6 @@ int cjks_write_pk(cjks_pkey* pk, unsigned char* buf) {
         ca = ca->next;
         clen++;
     }
-
-    clen = cjks_htoni(clen);
-    memcpy(clenptr, &clen, 4);
 
     cjks_io_mem_free(io);
 
@@ -39,7 +36,7 @@ void test_pk_write() {
     jptr = cjks_get(jks, "mytestkey");
     assert(jptr->tag == CJKS_PRIVATE_KEY_TAG);
 
-    unsigned char pk_buf[4096];
+    uchar pk_buf[4096];
     int pk_buf_len = cjks_write_pk(jptr->pk, pk_buf);
 
     assert(pk_buf_len > 0);

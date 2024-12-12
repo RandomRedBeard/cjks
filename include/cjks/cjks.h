@@ -22,6 +22,7 @@ static const uchar SUN_JKS_ALGO_ID[] = { 43,6,1,4,1,42,2,17,1,1 };
 typedef struct cjks_ca_st {
     char *cert_type;
     cjks_buf cert;
+    uint32 n;
     struct cjks_ca_st *next;
 } cjks_ca;
 
@@ -50,7 +51,7 @@ CJKS_DLL cjks* cjks_parse_ex2(const char* pth, char* password, size_t len, const
 CJKS_DLL cjks* cjks_get(cjks* jks, const char* alias);
 CJKS_DLL cjks *cjks_new(int tag);
 CJKS_DLL void cjks_free(cjks* jks);
-CJKS_DLL cjks_ca *cjks_ca_new();
+CJKS_DLL cjks_ca *cjks_ca_new(uint32 n);
 CJKS_DLL void cjks_ca_free(cjks_ca* ca);
 CJKS_DLL int cjks_parse_ca(cjks_io* io, cjks_ca* ca);
 CJKS_DLL cjks_pkey* cjks_pk_new();

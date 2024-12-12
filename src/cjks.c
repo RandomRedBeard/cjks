@@ -38,7 +38,7 @@ cjks* cjks_parse(cjks_io* io, const char* password, size_t len) {
             }
         }
         else if (tag == CJKS_TRUSTED_CERT_TAG) {
-            chain->ca = cjks_ca_new();
+            chain->ca = cjks_ca_new(0);
             if (cjks_parse_ca(io, chain->ca) < 0) {
                 perror("Failed to parse jks");
                 break;
@@ -115,8 +115,10 @@ void cjks_free(cjks* jks) {
     } while (jks);
 }
 
-cjks_ca* cjks_ca_new() {
-    return calloc(1, sizeof(cjks_ca));
+cjks_ca* cjks_ca_new(uint32 n) {
+    cjks_ca* ca = calloc(1, sizeof(cjks_ca));
+    ca->n = n;
+    return ca;
 }
 
 void cjks_ca_free(cjks_ca* ca) {
@@ -153,7 +155,7 @@ int cjks_parse_pk(cjks_io* io, cjks_pkey* pk) {
 
     cjks_ca* chain = NULL, * root = NULL;
     for (uint32 i = 0; i < chain_len; i++) {
-        chain = cjks_ca_new();
+        chain = cjks_ca_new(i);
         cjks_parse_ca(io, chain);
         chain->next = root;
         root = chain;
