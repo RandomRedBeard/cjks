@@ -36,7 +36,7 @@ static void b64print(const uchar* buf, size_t len) {
 static void hexprint(const uchar* buf, size_t len) {
     char* dst = malloc(len * 2);
     cjks_hex(dst, buf, len);
-    printf("%.*s\n", len * 2, dst);
+    printf("%.*s\n", (int)(len * 2), dst);
     free(dst);
 }
 

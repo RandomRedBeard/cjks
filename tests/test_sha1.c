@@ -2,45 +2,16 @@
 #include <cjks/utl.h>
 #include "private/debug.h"
 
-/**
- * @brief S^n(X)  =  (X << n) OR (X >> 32-n).
- */
-uint32 cir_ls(uint32 i, uchar n) {
-    return (i << n) | (i >> (32 - n));
-}
-
-uint32 seq_f(uchar t, uint32 b, uint32 c, uint32 d) {
-    if (t < 20) {
-        return (b & c) | ((~b) & d);
-    }
-    if (t < 40) {
-        return b ^ c ^ d;
-    }
-    if (t < 60) {
-        return (b & c) | (b & d) | (c & d);
-    }
-    return b ^ c ^ d;
-}
-
-uint32 seq_k(uchar t) {
-    if (t < 20) {
-        return 0x5A827999;
-    }
-    if (t < 40) {
-        return 0x6ED9EBA1;
-    }
-    if (t < 60) {
-        return 0x8F1BBCDC;
-    }
-    return 0xCA62C1D6;
-}
+#define cir_ls(i, n) ((i << n) | (i >> (32 - n)))
 
 typedef struct block_st {
     uint32 words[16];
+    uint32 i;
 } block;
 
 typedef struct hash_st {
     uint32 h[5];
+    uint64 len;
 } hash;
 
 void init_hash(hash* hs) {
@@ -49,48 +20,49 @@ void init_hash(hash* hs) {
     hs->h[2] = 0x98BADCFE;
     hs->h[3] = 0x10325476;
     hs->h[4] = 0xC3D2E1F0;
+
+    hs->len = 0;
 }
 
-void mpad(block* blk, uint64 len) {
-    uchar* mptr = (uchar*)blk + len;
-    *mptr = 0x80;
-    len = cjks_htonll(len * 8);
-    memcpy(&blk->words[14], &len, sizeof(len));
-}
-
-int main() {
-    block blk;
-    memset(&blk, 0, sizeof(blk));
-    memcpy(&blk, "This is thomas", sizeof("This is thomas") - 1);
-    mpad(&blk, sizeof("This is thomas") - 1);
-
+void hash_block(hash* hs, block* blk) {
     for (int i = 0; i < 16; i++) {
-        blk.words[i] = cjks_htoni(blk.words[i]);
-        showbits(blk.words + i, 4);
+        blk->words[i] = cjks_htoni(blk->words[i]);
     }
 
-    uint32 words[80];
-    memcpy(words, &blk, sizeof(blk));
+    uint32 a, b, c, d, e, f, k, tmp;
 
-    hash hs;
-    init_hash(&hs);
-
-    uint32 a, b, c, d, e, tmp;
-
-    a = hs.h[0];
-    b = hs.h[1];
-    c = hs.h[2];
-    d = hs.h[3];
-    e = hs.h[4];
+    a = hs->h[0];
+    b = hs->h[1];
+    c = hs->h[2];
+    d = hs->h[3];
+    e = hs->h[4];
 
     for (uchar i = 0; i < 80; i++) {
         if (i > 15) {
             // W(t-3) XOR W(t-8) XOR W(t-14) XOR W(t-16)
-            words[i] = cir_ls(words[i - 3] ^ words[i - 8] ^ words[i - 14] ^ words[i - 16], 1);
+            blk->words[i & 0x0F] = blk->words[i - 3 & 0x0F] ^ blk->words[i - 8 & 0x0F] ^ blk->words[i - 14 & 0x0F] ^ blk->words[i - 16 & 0x0F];
+            blk->words[i & 0x0F] = cir_ls(blk->words[i & 0x0F], 1);
+        }
+
+        if (i < 20) {
+            f = (b & c) | ((~b) & d);
+            k = 0x5A827999;
+        }
+        else if (i < 40) {
+            f = b ^ c ^ d;
+            k = 0x6ED9EBA1;
+        }
+        else if (i < 60) {
+            f = (b & c) | (b & d) | (c & d);
+            k = 0x8F1BBCDC;
+        }
+        else {
+            f = b ^ c ^ d;
+            k = 0xCA62C1D6;
         }
 
         // TEMP = S^5(A) + f(t;B,C,D) + E + W(t) + K(t);
-        tmp = cir_ls(a, 5) + seq_f(i, b, c, d) + e + words[i] + seq_k(i);
+        tmp = cir_ls(a, 5) + f + e + blk->words[i & 0x0F] + k;
 
         // E = D;  D = C;  C = S^30(B);  B = A; A = TEMP;
         e = d;
@@ -101,20 +73,63 @@ int main() {
     }
 
     // H0 = H0 + A, H1 = H1 + B, H2 = H2 + C, H3 = H3 + D, H4 = H4 + E.
-    hs.h[0] += a;
-    hs.h[1] += b;
-    hs.h[2] += c;
-    hs.h[3] += d;
-    hs.h[4] += e;
+    hs->h[0] += a;
+    hs->h[1] += b;
+    hs->h[2] += c;
+    hs->h[3] += d;
+    hs->h[4] += e;
+}
+
+void process_message(hash* hs, block* blk, uchar* msg, size_t len) {
+    hs->len += len;
+    for (int i = 0; i < len; i++) {
+        ((uchar*)blk)[blk->i++] = msg[i];
+        if (blk->i == 64) {
+            hash_block(hs, blk);
+            blk->i = 0;
+        }
+    }
+}
+
+void finalize_hash(hash* hs, block* blk) {
+    uchar* bptr = (uchar*)&blk->words + blk->i;
+    *bptr = 0x80;
+    memset(bptr + 1, 0, sizeof(blk->words) - blk->i - 1);
+
+    if (blk->i > 55) {
+        hash_block(hs, blk);
+        memset(&blk->words, 0, sizeof(blk->words));
+    }
+
+    uint64 len = cjks_htonll(hs->len * 8);
+    memcpy(&blk->words[14], &len, sizeof(len));
+
+    hash_block(hs, blk);
+}
+
+int main() {
+    hash hs;
+    init_hash(&hs);
+
+    block blk;
+    blk.i = 0;
+
+    FILE* fp = fopen("README.md", "rb");
+    uchar buf[128];
+    size_t rlen = 0;
+    while ((rlen = fread(buf, 1, sizeof(buf), fp)) > 0) {
+        process_message(&hs, &blk, buf, rlen);
+    }
+
+    // Padding
+    finalize_hash(&hs, &blk);
 
     for (int i = 0; i < 5; i++) {
         hs.h[i] = cjks_ntohi(hs.h[i]);
     }
 
-    hexprint(&hs, 20);
+    hexprint((uchar*)&hs, 20);
     printf("Done\n");
-
-    // 375ea55ea6b5cacbfd03ea56d82da9da2114a52e
 
     return 0;
 }
