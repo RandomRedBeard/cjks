@@ -1,18 +1,8 @@
-#include "test_base.h"
-#include <cjks/utl.h>
-#include <cjks/io.h>
-#include <cjks/sha1.h>
-#include "private/debug.h"
+#include "cjks/sha1.h"
 
+cjks_sha1_t* cjks_sha1_new() {
+    cjks_sha1_t* hs = malloc(sizeof(cjks_sha1_t));
 
-typedef struct hash_st {
-    uint32 h[5];
-    uint64 len;
-    uint32 words[16];
-    uint32 i;
-} hash;
-
-void init_hash(hash* hs) {
     hs->h[0] = 0x67452301;
     hs->h[1] = 0xEFCDAB89;
     hs->h[2] = 0x98BADCFE;
@@ -21,9 +11,11 @@ void init_hash(hash* hs) {
 
     hs->len = 0;
     hs->i = 0;
+
+    return hs;
 }
 
-void hash_block(hash* hs) {
+void cjks_sha1_hsh(cjks_sha1_t* hs) {
     for (int i = 0; i < 16; i++) {
         hs->words[i] = cjks_htoni(hs->words[i]);
     }
@@ -79,25 +71,25 @@ void hash_block(hash* hs) {
     hs->h[4] += e;
 }
 
-void process_message(hash* hs, uchar* msg, size_t len) {
+void cjks_sha1_cnsm(cjks_sha1_t* hs, const uchar* v, uint64 len) {
     hs->len += len;
     for (int i = 0; i < len; i++) {
-        ((uchar*)&hs->words)[hs->i++] = msg[i];
+        ((uchar*)&hs->words)[hs->i++] = v[i];
         if (hs->i == 64) {
-            hash_block(hs);
+            cjks_sha1_hsh(hs);
             hs->i = 0;
         }
     }
 }
 
-void finalize_hash(hash* hs) {
+void cjks_sha1_cmpl(cjks_sha1_t* hs) {
     uchar* bptr = (uchar*)&hs->words + hs->i;
     *bptr++ = 0x80;
     hs->i++;
 
     if (hs->i > 56) {
         memset(bptr, 0, 64 - hs->i);
-        hash_block(hs);
+        cjks_sha1_hsh(hs);
         memset(&hs->words, 0, sizeof(hs->words));
     }
     else {
@@ -107,40 +99,9 @@ void finalize_hash(hash* hs) {
     uint64 len = cjks_htonll(hs->len * 8);
     memcpy(&hs->words[14], &len, sizeof(len));
 
-    hash_block(hs);
+    cjks_sha1_hsh(hs);
 
     for (int i = 0; i < 5; i++) {
         hs->h[i] = cjks_ntohi(hs->h[i]);
     }
-}
-
-int main() {
-    hash hs;
-    init_hash(&hs);
-
-    FILE* fp = fopen("README.md", "rb");
-    uchar buf[90];
-    size_t rlen = 0;
-    // while ((rlen = fread(buf, 1, sizeof(buf), fp)) > 0) {
-    //     process_message(&hs, buf, rlen);
-    // }
-
-    process_message(&hs, (uchar*)"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", 57);
-
-    // Padding
-    finalize_hash(&hs);
-
-    cjks_sha1_t* sh = cjks_sha1_new();
-    cjks_sha1_cnsm(sh, (uchar*)"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", 57);
-    cjks_sha1_cmpl(sh);
-    
-    char cmp[SHA_DIGEST_LENGTH + 1];
-    cjks_sha1(cmp, 1, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", (size_t)57);
-
-    hexprint((uchar*)&hs, 20);
-    hexprint((uchar*)sh, 20);
-    hexprint(cmp, 20);
-    printf("Done\n");
-
-    return 0;
 }
