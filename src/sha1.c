@@ -15,6 +15,10 @@ cjks_sha1_t* cjks_sha1_new() {
     return hs;
 }
 
+void cjks_sha1_free(cjks_sha1_t* sh) {
+    free(sh);
+}
+
 void cjks_sha1_hsh(cjks_sha1_t* hs) {
     uint32 words[80];
     for (int i = 0; i < 16; i++) {

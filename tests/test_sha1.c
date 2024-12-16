@@ -20,6 +20,8 @@ void test_sha1_1() {
     uchar icmp[SHA_DIGEST_LENGTH];
     cjks_sha1_cmpl(sh, (uint32*)icmp);
 
+    cjks_sha1_free(sh);
+
     cjks_buf buff = CJKS_BUF_INIT;
     cjks_read_from_res("/keystore", &buff);
 

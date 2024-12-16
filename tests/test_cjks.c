@@ -70,7 +70,7 @@ void test_chain() {
         ERR_print_errors_fp(stderr);
     }
 
-    X509_print_fp(stderr, x509_cert);
+    X509_free(x509_cert);
 
     cjks_free(jks);
 }
