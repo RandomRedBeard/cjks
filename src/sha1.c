@@ -77,7 +77,7 @@ void cjks_sha1_hsh(cjks_sha1_t* hs) {
 }
 
 void cjks_sha1_cnsm(cjks_sha1_t* hs, const uchar* v, uint64 len) {
-    uchar* vend = v + len;
+    const uchar* vend = v + len;
     uint32 pdiff, idiff;
     hs->len += len;
     while (v != vend) {
