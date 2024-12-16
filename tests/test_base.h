@@ -29,7 +29,7 @@ _CrtSetReportFile(_CRT_WARN, _CRTDBG_FILE_STDOUT);
 #include <cjks/io.h>
 
 static int cjks_io_read_all(const char* path, cjks_buf* buf) {
-    FILE *fp = fopen(path, "rb");
+    FILE* fp = fopen(path, "rb");
     if (!fp) {
         return -1;
     }
@@ -50,6 +50,12 @@ static int cjks_read_from_res(const char* path, cjks_buf* buf) {
     return cjks_io_read_all(rpath, buf);
 }
 
+FILE* cjks_fp_from_res(const char* path) {
+    char rpath[128] = CJKS_RES_DIR;
+    strcat(rpath, path);
+    return fopen(rpath, "rb");
+}
+
 typedef void(*test_fn)();
 typedef struct {
     const char* name;
@@ -58,13 +64,13 @@ typedef struct {
 
 static void cjks_run_tests(test_st* tests) {
     memcheckinit
-    while (tests->name) {
-        printf("Running test %s\n", tests->name);
-        tests->test();
-        memcheckfin
-        printf("Test completed %s\n", tests->name);
-        tests++;
-    }
+        while (tests->name) {
+            printf("Running test %s\n", tests->name);
+            tests->test();
+            memcheckfin
+                printf("Test completed %s\n", tests->name);
+            tests++;
+        }
 }
 
 #define CJKS_TESTS_ST test_st tests[] = {

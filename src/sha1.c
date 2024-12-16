@@ -16,8 +16,9 @@ cjks_sha1_t* cjks_sha1_new() {
 }
 
 void cjks_sha1_hsh(cjks_sha1_t* hs) {
+    uint32 words[80];
     for (int i = 0; i < 16; i++) {
-        hs->words[i] = cjks_htoni(hs->words[i]);
+        words[i] = cjks_htoni(hs->words[i]);
     }
 
     uint32 a, b, c, d, e, f, k, tmp;
@@ -31,8 +32,8 @@ void cjks_sha1_hsh(cjks_sha1_t* hs) {
     for (uchar i = 0; i < 80; i++) {
         if (i > 15) {
             // W(t-3) XOR W(t-8) XOR W(t-14) XOR W(t-16)
-            hs->words[i & 0x0F] = hs->words[i - 3 & 0x0F] ^ hs->words[i - 8 & 0x0F] ^ hs->words[i - 14 & 0x0F] ^ hs->words[i - 16 & 0x0F];
-            hs->words[i & 0x0F] = cir_ls(hs->words[i & 0x0F], 1);
+            words[i] = words[i - 3] ^ words[i - 8] ^ words[i - 14] ^ words[i - 16];
+            words[i] = cir_ls(words[i], 1);
         }
 
         if (i < 20) {
@@ -53,7 +54,7 @@ void cjks_sha1_hsh(cjks_sha1_t* hs) {
         }
 
         // TEMP = S^5(A) + f(t;B,C,D) + E + W(t) + K(t);
-        tmp = cir_ls(a, 5) + f + e + hs->words[i & 0x0F] + k;
+        tmp = cir_ls(a, 5) + f + e + words[i] + k;
 
         // E = D;  D = C;  C = S^30(B);  B = A; A = TEMP;
         e = d;
@@ -72,17 +73,27 @@ void cjks_sha1_hsh(cjks_sha1_t* hs) {
 }
 
 void cjks_sha1_cnsm(cjks_sha1_t* hs, const uchar* v, uint64 len) {
+    uchar* vend = v + len;
+    uint32 pdiff, idiff;
     hs->len += len;
-    for (int i = 0; i < len; i++) {
-        ((uchar*)&hs->words)[hs->i++] = v[i];
-        if (hs->i == 64) {
+    while (v != vend) {
+        pdiff = vend - v;
+        idiff = 64 - hs->i;
+        if (pdiff < idiff) {
+            memcpy(((uchar*)hs->words) + hs->i, v, pdiff);
+            v = vend;
+            hs->i += pdiff;
+        }
+        else {
+            memcpy(((uchar*)hs->words) + hs->i, v, idiff);
+            v += idiff;
             cjks_sha1_hsh(hs);
             hs->i = 0;
         }
     }
 }
 
-void cjks_sha1_cmpl(cjks_sha1_t* hs) {
+void cjks_sha1_cmpl(cjks_sha1_t* hs, uint32 v[5]) {
     uchar* bptr = (uchar*)&hs->words + hs->i;
     *bptr++ = 0x80;
     hs->i++;
@@ -102,6 +113,6 @@ void cjks_sha1_cmpl(cjks_sha1_t* hs) {
     cjks_sha1_hsh(hs);
 
     for (int i = 0; i < 5; i++) {
-        hs->h[i] = cjks_ntohi(hs->h[i]);
+        v[i] = cjks_ntohi(hs->h[i]);
     }
 }

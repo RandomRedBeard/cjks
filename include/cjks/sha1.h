@@ -19,6 +19,6 @@ typedef struct cjks_sha1_st {
 CJKS_DLL cjks_sha1_t* cjks_sha1_new();
 CJKS_DLL void cjks_sha1_hsh(cjks_sha1_t*);
 CJKS_DLL void cjks_sha1_cnsm(cjks_sha1_t*, const uchar* v, uint64 len);
-CJKS_DLL void cjks_sha1_cmpl(cjks_sha1_t*);
+CJKS_DLL void cjks_sha1_cmpl(cjks_sha1_t*, uint32 v[5]);
 
 #endif
