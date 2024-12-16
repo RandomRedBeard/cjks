@@ -6,6 +6,10 @@
 void validate_jks(cjks *jks) {
     cjks *jptr = jks;
     uint32 cnt = 0;
+
+    // 0-based indexing on entries
+    assert(jptr->n == 2);
+
     while (jptr) {
         printf("%d - %s\n", jptr->tag, jptr->alias);
         jptr = jptr->next;
@@ -85,6 +89,7 @@ void test_chain2() {
     assert(jks->tag == CJKS_PRIVATE_KEY_TAG);
 
     cjks_ca* ca = jks->pk->cert_chain;
+    assert(ca->n == 2);
     while (ca) {
         printf("Count - %d\n", ca->n);
         ca = ca->next;

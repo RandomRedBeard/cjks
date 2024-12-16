@@ -13,14 +13,13 @@ int cjks_write_pk(cjks_pkey* pk, uchar* buf) {
     int i = cjks_io_write_data(io, &pk->encrypted_ber);
     
     // First ca in chain has length
-    uint32 clen = cjks_htoni(pk->cert_chain->n);
+    uint32 clen = cjks_htoni(pk->cert_chain->n + 1);
     i += cjks_io_write(io, &clen, 4);
 
     cjks_ca* ca = pk->cert_chain;
     while (ca) {
         i += cjks_write_ca(io, ca);
         ca = ca->next;
-        clen++;
     }
 
     cjks_io_mem_free(io);
@@ -46,6 +45,9 @@ void test_pk_write() {
 
     // Check eber first
     assert(memcmp(cmp->encrypted_ber.buf, jptr->pk->encrypted_ber.buf, cmp->encrypted_ber.len) == 0);
+
+    // ca chain
+    assert(cmp->cert_chain);
 }
 
 CJKS_TESTS_ST
