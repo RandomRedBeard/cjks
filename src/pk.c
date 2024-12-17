@@ -13,8 +13,8 @@ void cjks_pk_free(cjks_pkey* pk) {
 
 int cjks_parse_pk(cjks_io* io, cjks_pkey* pk) {
     cjks_io_aread_data(io, &pk->encrypted_ber);
+    
     uint32 chain_len = cjks_io_read_be4(io);
-
     cjks_ca* p1 = NULL, *p2 = NULL, *tmp;
     for (uint32 i = chain_len; i > 0; i--) {
         tmp = cjks_ca_new();
