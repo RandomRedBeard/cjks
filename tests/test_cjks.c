@@ -8,7 +8,7 @@ void validate_jks(cjks *jks) {
     uint32 cnt = 0;
 
     // 0-based indexing on entries
-    assert(jptr->n == 2);
+    assert(jptr->n == 3);
 
     while (jptr) {
         printf("%d - %s\n", jptr->tag, jptr->alias);
@@ -65,9 +65,13 @@ void test_chain() {
     strcat(ksp, "/keystore");
 
     cjks *jks = cjks_parse_ex2(ksp, "changeit", sizeof("changeit") - 1, "US-ASCII"), *jptr = jks;
+    jptr = cjks_get(jks, "mytestkey");
+    printf("Alias %s\n", jptr->alias);
+    assert(jptr->tag == CJKS_PRIVATE_KEY_TAG);
 
-    const uchar* cert = jks->pk->cert_chain->cert.buf;
-    size_t cert_len = jks->pk->cert_chain->cert.len;
+    puts("DONE");
+    const uchar* cert = jptr->pk->cert_chain->cert.buf;
+    size_t cert_len = jptr->pk->cert_chain->cert.len;
 
     X509* x509_cert = NULL;
     if (!d2i_X509(&x509_cert, &cert, cert_len)) {

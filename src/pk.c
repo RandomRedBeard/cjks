@@ -15,6 +15,7 @@ int cjks_parse_pk(cjks_io* io, cjks_pkey* pk) {
     cjks_io_aread_data(io, &pk->encrypted_ber);
     
     uint32 chain_len = cjks_io_read_be4(io);
+    printf("Chain %u\n", chain_len);
     cjks_ca* p1 = NULL, *p2 = NULL, *tmp;
     for (uint32 i = chain_len; i > 0; i--) {
         tmp = cjks_ca_new();
@@ -28,15 +29,6 @@ int cjks_parse_pk(cjks_io* io, cjks_pkey* pk) {
             p2 = tmp;
         }
     }
-
-    // cjks_ca* chain = NULL, * root = NULL;
-    // for (uint32 i = 0; i < chain_len; i++) {
-    //     chain = cjks_ca_new();
-    //     chain->n = i;
-    //     cjks_parse_ca(io, chain);
-    //     chain->next = root;
-    //     root = chain;
-    // }
     pk->cert_chain = p1;
     return 0;
 }

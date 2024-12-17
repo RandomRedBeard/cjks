@@ -18,38 +18,43 @@ cjks* cjks_parse(cjks_io* io, const char* password, size_t len) {
 
     uint32 entry_count = cjks_io_read_be4(io);
 
-    cjks* root = NULL, * chain = NULL;
-
-    for (uint32 i = 0; i < entry_count; i++) {
+    cjks* p1 = NULL, * p2 = NULL, * tmp;
+    for (uint32 i = entry_count; i > 0; i--) {
         uint32 tag = cjks_io_read_be4(io);
-        chain = cjks_new(tag);
-        chain->alias = cjks_io_aread_utf(io);
-        chain->ts = cjks_io_read_be8(io);
-        chain->n = i;
+        tmp = cjks_new(tag);
+        tmp->alias = cjks_io_aread_utf(io);
+        tmp->ts = cjks_io_read_be8(io);
+        tmp->n = i;
 
         if (tag == CJKS_PRIVATE_KEY_TAG) {
-            chain->pk = cjks_pk_new();
-            if (cjks_parse_pk(io, chain->pk) < 0) {
+            tmp->pk = cjks_pk_new();
+            if (cjks_parse_pk(io, tmp->pk) < 0) {
                 perror("Failed to parse jks");
                 break;
             }
-            if (cjks_decrypt_pk(chain->pk, password, len) < 0) {
+            if (cjks_decrypt_pk(tmp->pk, password, len) < 0) {
                 perror("Failed to decrypt pk");
                 break;
             }
         }
         else if (tag == CJKS_TRUSTED_CERT_TAG) {
-            chain->ca = cjks_ca_new();
-            if (cjks_parse_ca(io, chain->ca) < 0) {
+            tmp->ca = cjks_ca_new();
+            if (cjks_parse_ca(io, tmp->ca) < 0) {
                 perror("Failed to parse jks");
                 break;
             }
         }
-        chain->next = root;
-        root = chain;
+
+        if (!p1) {
+            p1 = p2 = tmp;
+        }
+        else {
+            p2->next = tmp;
+            p2 = tmp;
+        }
     }
 
-    return root;
+    return p1;
 }
 
 cjks* cjks_parse_ex(cjks_io* io, char* password, size_t len, const char* encoding) {
