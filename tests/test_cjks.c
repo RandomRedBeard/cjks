@@ -66,10 +66,8 @@ void test_chain() {
 
     cjks *jks = cjks_parse_ex2(ksp, "changeit", sizeof("changeit") - 1, "US-ASCII"), *jptr = jks;
     jptr = cjks_get(jks, "mytestkey");
-    printf("Alias %s\n", jptr->alias);
     assert(jptr->tag == CJKS_PRIVATE_KEY_TAG);
 
-    puts("DONE");
     const uchar* cert = jptr->pk->cert_chain->cert.buf;
     size_t cert_len = jptr->pk->cert_chain->cert.len;
 
