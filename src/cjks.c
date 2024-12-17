@@ -116,64 +116,6 @@ void cjks_free(cjks* jks) {
     } while (jks);
 }
 
-cjks_ca* cjks_ca_new() {
-    return calloc(1, sizeof(cjks_ca));
-}
-
-void cjks_ca_free(cjks_ca* ca) {
-    cjks_ca* n;
-    do {
-        n = ca->next;
-        free(ca->cert_type);
-        cjks_buf_clear(&ca->cert);
-        free(ca);
-        ca = n;
-    } while (ca);
-}
-
-int cjks_parse_ca(cjks_io* io, cjks_ca* ca) {
-    ca->cert_type = cjks_io_aread_utf(io);
-    cjks_io_aread_data(io, &ca->cert);
-    return 0;
-}
-
-cjks_pkey* cjks_pk_new() {
-    return calloc(1, sizeof(cjks_pkey));
-}
-
-void cjks_pk_free(cjks_pkey* pk) {
-    cjks_buf_clear(&pk->key);
-    cjks_buf_clear(&pk->encrypted_ber);
-    cjks_ca_free(pk->cert_chain);
-    free(pk);
-}
-
-int cjks_parse_pk(cjks_io* io, cjks_pkey* pk) {
-    cjks_io_aread_data(io, &pk->encrypted_ber);
-    uint32 chain_len = cjks_io_read_be4(io);
-
-    cjks_ca* chain = NULL, * root = NULL;
-    for (uint32 i = 0; i < chain_len; i++) {
-        chain = cjks_ca_new();
-        chain->n = i;
-        cjks_parse_ca(io, chain);
-        chain->next = root;
-        root = chain;
-    }
-    pk->cert_chain = root;
-    return 0;
-}
-
-
-int cjks_parse_eber(const cjks_buf* eber, X509_SIG** sig) {
-    const uchar* dptr = eber->buf;
-    if (!d2i_X509_SIG(sig, &dptr, (long)eber->len)) {
-        return -1;
-    }
-
-    return 0;
-}
-
 void cjks_sun_jks_crypt(const uchar* src, uchar* dest, size_t len, uchar* iv, const char* password, size_t plen) {
     uchar* ivptr = iv, * ivptrend = iv + SHA_DIGEST_LENGTH;
     uchar* dptr = dest;
@@ -203,45 +145,20 @@ int cjks_sun_jks_decrypt(const uchar* data, uchar* dest, int len, const char* pa
     return cjks_sha1_cmp(sha, 2, password, plen, dest, dlen);
 }
 
-int cjks_decrypt_pk(cjks_pkey* pk, const char* password, size_t len) {
-    X509_SIG* sig = NULL;
-    const X509_ALGOR* algor = NULL;
-    const ASN1_OCTET_STRING* digest = NULL;
-    if (cjks_parse_eber(&pk->encrypted_ber, &sig) < 0) {
-        perror("EBER parse failed");
-        return -1;
-    }
+int cjks_sun_jks_encrypt(const uchar* src, uchar* dest, int dlen, const char* password, size_t plen) {
+    uchar iv[SHA_DIGEST_LENGTH];
 
-    X509_SIG_get0(sig, &algor, &digest);
+    // Generate new IV
+    RAND_bytes(iv, SHA_DIGEST_LENGTH);
+    // Write iv to digest first
+    memcpy(dest, iv, SHA_DIGEST_LENGTH);
 
-    // SUN_JKS Algo check
-    if (sizeof(SUN_JKS_ALGO_ID) != OBJ_length(algor->algorithm) || \
-        memcmp(SUN_JKS_ALGO_ID, OBJ_get0_data(algor->algorithm), sizeof(SUN_JKS_ALGO_ID)) != 0) {
-        X509_SIG_free(sig);
-        perror("SUN_JKS_ALGO wrong");
-        return -1;
-    }
+    cjks_sun_jks_crypt(src, dest + SHA_DIGEST_LENGTH, dlen, iv, password, plen);
 
-    uchar* pkey_buf = malloc(digest->length - 40);
-
-    if (!cjks_sun_jks_decrypt(digest->data, pkey_buf, digest->length, password, len)) {
-        free(pkey_buf);
-        X509_SIG_free(sig);
-        perror("sun_jks_dec failed");
-        return -1;
-    }
-
-    pk->key.buf = pkey_buf;
-    pk->key.len = digest->length - 40;
-
-    X509_SIG_free(sig);
+    // SHA1 append
+    cjks_sha1(dest + SHA_DIGEST_LENGTH + dlen, 2, password, plen, src, dlen);
 
     return 0;
-}
-
-EVP_PKEY* cjks_2evp(const cjks_pkey* pkey) {
-    const uchar* ptr = pkey->key.buf;
-    return d2i_AutoPrivateKey(NULL, &ptr, (long)pkey->key.len);
 }
 
 EVP_PKEY* cjks_2evp2(const cjks* jks) {

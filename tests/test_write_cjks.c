@@ -20,7 +20,7 @@ void test_write_cjks_header() {
     cjks_sha1_t* sh = cjks_sha1_new();
 
     cjks_sha1_cnsm(sh, pwd, plen);
-    cjks_sha1_cnsm(sh, SIGWHITE, sizeof(SIGWHITE) - 1);
+    cjks_sha1_cnsm(sh, (uchar*)SIGWHITE, sizeof(SIGWHITE) - 1);
 
     io = cjks_io_sha1_new(io, sh);
 
@@ -29,7 +29,7 @@ void test_write_cjks_header() {
     cjks_io_write_be4(io, 0);
 
     uchar hash[SHA_DIGEST_LENGTH];
-    cjks_sha1_cmpl(sh, hash);
+    cjks_sha1_cmpl(sh, (uint32*)hash);
 
     io = cjks_io_sha1_free(io, 1);
 
