@@ -20,7 +20,6 @@ int cjks_write_pk(cjks_io* io, cjks_pkey* pk, const char* password, size_t len) 
         cjks_write_ca(io, ca);
         ca = ca->next;
     }
-
 }
 
 int cjks_write_jks_header(cjks_io* io, cjks* jks) {
