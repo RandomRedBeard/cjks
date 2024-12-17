@@ -89,11 +89,15 @@ void test_chain2() {
     assert(jks->tag == CJKS_PRIVATE_KEY_TAG);
 
     cjks_ca* ca = jks->pk->cert_chain;
-    assert(ca->n == 2);
+    assert(ca->n == 3);
+    uint16 cnt = 0;
     while (ca) {
         printf("Count - %d\n", ca->n);
         ca = ca->next;
+        cnt++;
     }
+
+    assert(cnt == 3);
 
     cjks_free(jks);
 }
