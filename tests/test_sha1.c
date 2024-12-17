@@ -69,7 +69,7 @@ void test_sha1_read() {
     uchar buf[1024];
     while (cjks_io_read(&sio->_io, buf, sizeof(buf)) > 0);
 
-    cjks_sha1_free(sio);
+    free(sio);
     cjks_io_fs_free(io);
 
     uchar icmp[SHA_DIGEST_LENGTH];
