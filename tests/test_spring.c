@@ -59,13 +59,10 @@ void test_jks_decrypt() {
 }
 
 void test_jks_decrypt2() {
-    char kp[128] = CJKS_RES_DIR;
-    strcat(kp, "/keystore");
-
     cjks_buf es_buf = CJKS_BUF_INIT;
     cjks_read_from_res("/estring", &es_buf);
 
-    FILE* fp = fopen(kp, "rb");
+    FILE* fp = cjks_fp_from_res("/keystore");
     assert(fp);
 
     cjks_io* io = cjks_io_fs_new(fp);

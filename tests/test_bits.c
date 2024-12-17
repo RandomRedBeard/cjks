@@ -4,14 +4,6 @@
 #include "private/debug.h"
 
 void test_cjks_ntohs() {
-    char buf[] = {1, 2, 3, 4};
-    int i = 0;
-    memcpy(&i, buf, 4);
-    showbits(&i, 4);
-    i = cjks_htoni(i);
-    showbits(&i, 4);
-    i = i >> 24;
-    showbits(&i, 4);
     assert(cjks_ntohs(1 << 8) == 1);
 }
 

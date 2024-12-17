@@ -36,9 +36,7 @@ void validate_jks(cjks *jks) {
 }
 
 void test_load() {
-    char ksp[128] = CJKS_RES_DIR;
-    strcat(ksp, "/keystore");
-    FILE *fp = fopen(ksp, "rb");
+    FILE* fp = cjks_fp_from_res("/keystore");
     assert(fp);
     cjks_io *io = cjks_io_fs_new(fp);
 
