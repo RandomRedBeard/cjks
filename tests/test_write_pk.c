@@ -48,6 +48,9 @@ void test_pk_write() {
 
     // ca chain
     assert(cmp->cert_chain);
+    cjks_free(jks);
+    cjks_pk_free(cmp);
+    cjks_io_mem_free(io);
 }
 
 CJKS_TESTS_ST

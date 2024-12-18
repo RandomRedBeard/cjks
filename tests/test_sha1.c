@@ -18,6 +18,8 @@ void test_sha1_1() {
         cjks_sha1_cnsm(sh, buf, rlen);
     }
 
+    fclose(fp);
+
     uchar icmp[SHA_DIGEST_LENGTH];
     cjks_sha1_cmpl(sh, (uint32*)icmp);
 
@@ -30,6 +32,8 @@ void test_sha1_1() {
     cjks_sha1(ossl_cmp, 1, buff.buf, buff.len);
 
     assert(memcmp(icmp, ossl_cmp, SHA_DIGEST_LENGTH) == 0);
+
+    cjks_buf_clear(&buff);
 }
 
 void test_sha1_read() {
@@ -53,7 +57,9 @@ void test_sha1_read() {
     assert(memcmp(icmp, ossl_cmp, SHA_DIGEST_LENGTH) == 0);
 
     io = cjks_io_sha1_free(io, 1);
+    cjks_io_close(io);
     cjks_io_fs_free(io);
+    cjks_buf_clear(&buff);
 }
 
 void test_sha1_write() {
@@ -76,6 +82,7 @@ void test_sha1_write() {
 
     assert(memcmp(icmp, ossl_cmp, SHA_DIGEST_LENGTH) == 0);
     io = cjks_io_sha1_free(io, 1);
+    cjks_io_close(io);
     cjks_io_fs_free(io);
 }
 

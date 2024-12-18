@@ -20,12 +20,16 @@ int cjks_write_pk(cjks_io* io, cjks_pkey* pk, const char* password, size_t len) 
         cjks_write_ca(io, ca);
         ca = ca->next;
     }
+    return 0;
+
 }
 
 int cjks_write_jks_header(cjks_io* io, cjks* jks) {
     cjks_io_write(io, cjks_jks_magic_number, 4);
     cjks_io_write_be4(io, 2);
     cjks_io_write_be4(io, jks->n);
+    return 0;
+
 }
 
 int cjks_write_jks_entry(cjks_io* io, cjks* jks, const char* password, size_t len) {
@@ -39,6 +43,8 @@ int cjks_write_jks_entry(cjks_io* io, cjks* jks, const char* password, size_t le
     else {
         cjks_write_pk(io, jks->pk, password, len);
     }
+
+    return 0;
 }
 
 void test_write_cjks_1() {
@@ -75,6 +81,8 @@ void test_write_cjks_1() {
     cjks_io_write(io, hash, SHA_DIGEST_LENGTH);
     cjks_io_close(io);
     cjks_io_fs_free(io);
+
+    cjks_free(jks);
 }
 
 CJKS_TESTS_ST

@@ -7,7 +7,9 @@ cjks_pkey* cjks_pk_new() {
 void cjks_pk_free(cjks_pkey* pk) {
     cjks_buf_clear(&pk->key);
     cjks_buf_clear(&pk->encrypted_ber);
-    cjks_ca_free(pk->cert_chain);
+    if (pk->cert_chain) {
+        cjks_ca_free(pk->cert_chain);
+    }
     free(pk);
 }
 
@@ -101,6 +103,7 @@ int cjks_encrypt_pk(cjks_pkey* pk, const char* password, size_t len) {
     int i = X509_ALGOR_set0(palg, obj, V_ASN1_NULL, NULL);
 
     ASN1_OCTET_STRING_set(pdigest, ekey, pk->key.len + 40);
+    free(ekey);
 
     int slen = i2d_X509_SIG(sig, NULL);
     pk->encrypted_ber.buf = malloc(slen);
@@ -109,6 +112,7 @@ int cjks_encrypt_pk(cjks_pkey* pk, const char* password, size_t len) {
     uchar* eber = pk->encrypted_ber.buf;
 
     slen = i2d_X509_SIG(sig, &eber);
+    X509_SIG_free(sig);
 
     return slen;
 }

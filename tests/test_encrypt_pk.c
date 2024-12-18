@@ -24,6 +24,10 @@ void test_encrypt_pk() {
 
     assert(memcmp(cmp->key.buf, jptr->pk->key.buf, cmp->key.len) == 0);
 
+    cjks_free(jks);
+    cmp->encrypted_ber.buf = NULL;
+    cjks_pk_free(cmp);
+
 }
 
 CJKS_TESTS_ST

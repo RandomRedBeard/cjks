@@ -27,6 +27,10 @@ void test_ca_write() {
 
     assert(strcmp(cmp->cert_type, jptr->ca->cert_type) == 0);
     assert(memcmp(cmp->cert.buf, jptr->ca->cert.buf, cmp->cert.len) == 0);
+
+    cjks_free(jks);
+    cjks_ca_free(cmp);
+    cjks_io_mem_free(io);
 }
 
 CJKS_TESTS_ST
