@@ -28,7 +28,6 @@ void test_decode_2() {
 void test_encode() {
     uchar buf[sizeof("aGVsbG8=")];
     int l = cjks_b64encode(buf, (uchar*)"hello", strlen("hello"));
-    puts((char*)buf);
     assert(memcmp("aGVsbG8=", buf, l) == 0);
 }
 
