@@ -20,3 +20,12 @@ int cjks_parse_ca(cjks_io* io, cjks_ca* ca) {
     cjks_io_aread_data(io, &ca->cert);
     return 0;
 }
+
+int cjks_write_ca(cjks_io* io, cjks_ca* ca) {
+    int r1 = cjks_io_write_utf(io, ca->cert_type, strlen(ca->cert_type));
+    if (r1 < 0) {
+        return r1;
+    }
+    int r2 = cjks_io_write_data(io, &ca->cert);
+    return r2 < 0 ? r2 : r1 + r2;
+}

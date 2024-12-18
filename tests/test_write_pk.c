@@ -1,12 +1,6 @@
 #include "test_base.h"
 #include <cjks/cjks.h>
 
-int cjks_write_ca(cjks_io* io, cjks_ca* ca) {
-    int i = cjks_io_write_utf(io, ca->cert_type, strlen(ca->cert_type));
-    i += cjks_io_write_data(io, &ca->cert);
-    return i;
-}
-
 int cjks_write_pk(cjks_pkey* pk, uchar* buf) {
     // <uint32 eber len><eber><uint32 chain len><uint16 cert type len><cert type><uint32 cert len><cert>...
     cjks_io* io = cjks_io_mem_new(buf, 4096);

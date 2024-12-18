@@ -1,15 +1,6 @@
 #include "test_base.h"
 #include <cjks/cjks.h>
 
-int cjks_write_ca(cjks_ca* ca, uchar* buf) {
-    cjks_io* io = cjks_io_mem_new(buf, 2048);
-
-    int i = cjks_io_write_utf(io, ca->cert_type, strlen(ca->cert_type));
-    i += cjks_io_write_data(io, &ca->cert);
-    cjks_io_mem_free(io);
-    return i;
-}
-
 void test_ca_write() {
     char pth[128] = CJKS_RES_DIR;
     strcat(pth, "/keystore");
@@ -19,10 +10,13 @@ void test_ca_write() {
     assert(jptr->tag == CJKS_TRUSTED_CERT_TAG);
 
     uchar ca_buf[2048];
-    int ca_buf_len = cjks_write_ca(jptr->ca, ca_buf);
+    cjks_io* io = cjks_io_mem_new(ca_buf, sizeof(ca_buf));
+    int ca_buf_len = cjks_write_ca(io, jptr->ca);
+    
+    cjks_io_mem_free(io);
+    io = cjks_io_mem_new(ca_buf, ca_buf_len);
 
     cjks_ca* cmp = cjks_ca_new();
-    cjks_io* io = cjks_io_mem_new(ca_buf, ca_buf_len);
     cjks_parse_ca(io, cmp);
 
     assert(strcmp(cmp->cert_type, jptr->ca->cert_type) == 0);

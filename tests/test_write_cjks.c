@@ -4,12 +4,6 @@
 
 char SIGWHITE[] = "Mighty Aphrodite";
 
-int cjks_write_ca(cjks_io* io, cjks_ca* ca) {
-    int i = cjks_io_write_utf(io, ca->cert_type, strlen(ca->cert_type));
-    i += cjks_io_write_data(io, &ca->cert);
-    return i;
-}
-
 int cjks_write_pk(cjks_io* io, cjks_pkey* pk, const char* password, size_t len) {
     cjks_encrypt_pk(pk, password, len);
 
