@@ -15,10 +15,9 @@ void cjks_pk_free(cjks_pkey* pk) {
 
 int cjks_parse_pk(cjks_io* io, cjks_pkey* pk) {
     cjks_io_aread_data(io, &pk->encrypted_ber);
-    
+
     uint32 chain_len = cjks_io_read_be4(io);
-    printf("Chain %u\n", chain_len);
-    cjks_ca* p1 = NULL, *p2 = NULL, *tmp;
+    cjks_ca* p1 = NULL, * p2 = NULL, * tmp;
     for (uint32 i = chain_len; i > 0; i--) {
         tmp = cjks_ca_new();
         tmp->n = i;
@@ -26,7 +25,8 @@ int cjks_parse_pk(cjks_io* io, cjks_pkey* pk) {
 
         if (!p1) {
             p1 = p2 = tmp;
-        } else {
+        }
+        else {
             p2->next = tmp;
             p2 = tmp;
         }
@@ -116,6 +116,33 @@ int cjks_encrypt_pk(cjks_pkey* pk, const char* password, size_t len) {
 
     return slen;
 }
+
+int cjks_write_pk(cjks_io* io, cjks_pkey* pk, const char* password, size_t len) {
+    int i = 0, tmp;
+    cjks_encrypt_pk(pk, password, len);
+
+    if ((tmp = cjks_io_write_data(io, &pk->encrypted_ber)) < 0) {
+        return -1;
+    }
+
+    i += tmp;
+
+    cjks_ca* ca = pk->cert_chain;
+    if ((tmp = cjks_io_write_be4(io, ca->n)) < 0) {
+        return -1;
+    }
+
+    i += tmp;
+    while (ca) {
+        if ((tmp = cjks_write_ca(io, ca)) < 0) {
+            return -1;
+        }
+        i += tmp;
+        ca = ca->next;
+    }
+    return i;
+}
+
 
 EVP_PKEY* cjks_2evp(const cjks_pkey* pkey) {
     const uchar* ptr = pkey->key.buf;

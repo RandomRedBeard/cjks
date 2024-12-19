@@ -1,26 +1,6 @@
 #include "test_base.h"
 #include <cjks/cjks.h>
 
-int cjks_write_pk(cjks_pkey* pk, uchar* buf) {
-    // <uint32 eber len><eber><uint32 chain len><uint16 cert type len><cert type><uint32 cert len><cert>...
-    cjks_io* io = cjks_io_mem_new(buf, 4096);
-    int i = cjks_io_write_data(io, &pk->encrypted_ber);
-    
-    // First ca in chain has length
-    uint32 clen = cjks_htoni(pk->cert_chain->n + 1);
-    i += cjks_io_write(io, &clen, 4);
-
-    cjks_ca* ca = pk->cert_chain;
-    while (ca) {
-        i += cjks_write_ca(io, ca);
-        ca = ca->next;
-    }
-
-    cjks_io_mem_free(io);
-
-    return i;
-}
-
 void test_pk_write() {
     char pth[128] = CJKS_RES_DIR;
     strcat(pth, "/keystore");
@@ -29,12 +9,18 @@ void test_pk_write() {
     jptr = cjks_get(jks, "mytestkey");
     assert(jptr->tag == CJKS_PRIVATE_KEY_TAG);
 
+    uchar pwd[] = "AGMAaABhAG4AZwBlAGkAdA==";
+    int plen = cjks_b64decode(pwd, pwd, sizeof(pwd) - 1);
+
     uchar pk_buf[4096];
-    int pk_buf_len = cjks_write_pk(jptr->pk, pk_buf);
+    cjks_io* io = cjks_io_mem_new(pk_buf, sizeof(pk_buf));
+    int pk_buf_len = cjks_write_pk(io, jptr->pk, pwd, plen);
+    printf("buf %d\n", pk_buf_len);
 
     assert(pk_buf_len > 0);
     cjks_pkey* cmp = cjks_pk_new();
-    cjks_io* io = cjks_io_mem_new(pk_buf, pk_buf_len);
+    cjks_io_mem_free(io);
+    io = cjks_io_mem_new(pk_buf, pk_buf_len);
     cjks_parse_pk(io, cmp);
 
     // Check eber first

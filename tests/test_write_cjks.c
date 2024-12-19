@@ -4,26 +4,11 @@
 
 char SIGWHITE[] = "Mighty Aphrodite";
 
-int cjks_write_pk(cjks_io* io, cjks_pkey* pk, const char* password, size_t len) {
-    cjks_encrypt_pk(pk, password, len);
-
-    cjks_io_write_data(io, &pk->encrypted_ber);
-    cjks_ca* ca = pk->cert_chain;
-    cjks_io_write_be4(io, ca->n);
-    while (ca) {
-        cjks_write_ca(io, ca);
-        ca = ca->next;
-    }
-    return 0;
-
-}
-
 int cjks_write_jks_header(cjks_io* io, cjks* jks) {
     cjks_io_write(io, cjks_jks_magic_number, 4);
     cjks_io_write_be4(io, 2);
     cjks_io_write_be4(io, jks->n);
     return 0;
-
 }
 
 int cjks_write_jks_entry(cjks_io* io, cjks* jks, const char* password, size_t len) {
