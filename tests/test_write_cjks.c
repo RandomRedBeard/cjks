@@ -92,9 +92,9 @@ void test_write_cjks_2() {
 
     tm = time(0);
     cjks_write_jks(io, jks, pwd, plen);
-    printf("%d\n", time(0) - tm)
+    printf("%d\n", time(0) - tm);
 
-        cjks_io_close(io);
+    cjks_io_close(io);
     cjks_io_fs_free(io);
 
     cjks_free(jks);
