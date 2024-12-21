@@ -66,6 +66,7 @@ void test_write_cjks_2() {
 
     i = i2d_X509(test, &kptr);
     ERR_print_errors_fp(stdout);
+    assert(i > 0);
 
     EVP_PKEY_free(pk);
 
