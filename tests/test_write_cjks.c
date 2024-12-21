@@ -32,6 +32,8 @@ void test_write_cjks_2() {
     uchar pwd[] = "AGMAaABhAG4AZwBlAGkAdA==";
     int plen = cjks_b64decode(pwd, pwd, sizeof(pwd) - 1);
 
+    time_t tm = time(0);
+
     EVP_PKEY* pk = EVP_RSA_gen(2048);
     char* data = malloc(4096), * buf = data;
     int i = i2d_PrivateKey(pk, &buf);
@@ -69,6 +71,8 @@ void test_write_cjks_2() {
     EVP_PKEY_free(pk);
     X509_free(test);
 
+    printf("EVP %d\n", time(0) - tm);
+
     cjks_ca* ca = cjks_ca_new();
     ca->cert.buf = kbuf;
     ca->cert.len = i;
@@ -86,11 +90,11 @@ void test_write_cjks_2() {
     FILE* fp = fopen("cjks.jks", "wb");
     cjks_io* io = cjks_io_fs_new(fp);
 
-    time_t tm = time(0);
+    tm = time(0);
     cjks_write_jks(io, jks, pwd, plen);
-    printf("%d\n", time(0) - tm);
+    printf("%d\n", time(0) - tm)
 
-    cjks_io_close(io);
+        cjks_io_close(io);
     cjks_io_fs_free(io);
 
     cjks_free(jks);
