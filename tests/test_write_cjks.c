@@ -86,7 +86,9 @@ void test_write_cjks_2() {
     FILE* fp = fopen("cjks.jks", "wb");
     cjks_io* io = cjks_io_fs_new(fp);
 
+    time_t tm = time(0);
     cjks_write_jks(io, jks, pwd, plen);
+    printf("%d\n", time(0) - tm);
 
     cjks_io_close(io);
     cjks_io_fs_free(io);
