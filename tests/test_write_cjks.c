@@ -65,6 +65,7 @@ void test_write_cjks_2() {
     X509_sign(test, pk, EVP_sha1());
 
     i = i2d_X509(test, &kptr);
+    ERR_print_errors_fp(stdout);
 
     EVP_PKEY_free(pk);
 

@@ -26,7 +26,6 @@ int cjks_write_ca(cjks_io* io, cjks_ca* ca) {
     if (r1 < 0) {
         return r1;
     }
-    printf("CA LEN %d\n", ca->cert.len);
     int r2 = cjks_io_write_data(io, &ca->cert);
     return r2 < 0 ? r2 : r1 + r2;
 }
