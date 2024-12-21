@@ -36,8 +36,6 @@ void test_write_cjks_2() {
     char* data = malloc(4096), * buf = data;
     int i = i2d_PrivateKey(pk, &buf);
 
-    b64print(data, i);
-
     cjks_pkey* cpk = cjks_pk_new();
     cpk->key.buf = data;
     cpk->key.len = i;
@@ -93,16 +91,6 @@ void test_write_cjks_2() {
     cjks_io_fs_free(io);
 
     cjks_free(jks);
-
-
-    fp = fopen("cjks.jks", "rb");
-    io = cjks_io_fs_new(fp);
-    jks = cjks_parse(io, pwd, plen);
-
-    cjks_free(jks);
-
-    cjks_io_close(io);
-    cjks_io_fs_free(io);
 
 }
 
