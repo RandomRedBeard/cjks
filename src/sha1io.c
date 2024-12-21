@@ -1,7 +1,7 @@
 #include "cjks/sha1io.h"
 
-int cjks_io_sha1_read(cjks_io* io, void* v, size_t len) {
-    struct cjks_io_sha1_st* sio = (struct cjks_io_sha1_st*)io;
+int cjks_io_sha1_read(cjks_io *io, void *v, size_t len) {
+    struct cjks_io_sha1_st *sio = (struct cjks_io_sha1_st *)io;
     int i = cjks_io_read(sio->_u, v, len);
     if (i < 0) {
         return i;
@@ -11,8 +11,8 @@ int cjks_io_sha1_read(cjks_io* io, void* v, size_t len) {
     return i;
 }
 
-int cjks_io_sha1_write(cjks_io* io, const void* v, size_t len) {
-    struct cjks_io_sha1_st* sio = (struct cjks_io_sha1_st*)io;
+int cjks_io_sha1_write(cjks_io *io, const void *v, size_t len) {
+    struct cjks_io_sha1_st *sio = (struct cjks_io_sha1_st *)io;
     cjks_sha1_cnsm(sio->sh, v, len);
 
     return cjks_io_write(sio->_u, v, len);
@@ -20,8 +20,8 @@ int cjks_io_sha1_write(cjks_io* io, const void* v, size_t len) {
 
 cjks_io_vt cjks_io_sha1_vt = { cjks_io_sha1_read, cjks_io_sha1_write, NULL };
 
-cjks_io* cjks_io_sha1_new(cjks_io* _u, cjks_sha1_t* sh) {
-    struct cjks_io_sha1_st* sio = calloc(1, sizeof(struct cjks_io_sha1_st));
+cjks_io *cjks_io_sha1_new(cjks_io *_u, cjks_sha1_t *sh) {
+    struct cjks_io_sha1_st *sio = calloc(1, sizeof(struct cjks_io_sha1_st));
     sio->_io.vt = &cjks_io_sha1_vt;
     sio->_u = _u;
     if (sh) {
@@ -34,8 +34,8 @@ cjks_io* cjks_io_sha1_new(cjks_io* _u, cjks_sha1_t* sh) {
     return &sio->_io;
 }
 
-cjks_io* cjks_io_sha1_free(cjks_io* io, int own_sha) {
-    struct cjks_io_sha1_st* sio = (struct cjks_io_sha1_st*)io;
+cjks_io *cjks_io_sha1_free(cjks_io *io, int own_sha) {
+    struct cjks_io_sha1_st *sio = (struct cjks_io_sha1_st *)io;
 
     if (own_sha) {
         cjks_sha1_free(sio->sh);
@@ -44,4 +44,14 @@ cjks_io* cjks_io_sha1_free(cjks_io* io, int own_sha) {
     io = sio->_u;
     free(sio);
     return io;
+}
+
+void cjks_io_sha1_cnsm(cjks_io *io, const uchar *b, size_t len) {
+    struct cjks_io_sha1_st *sio = (struct cjks_io_sha1_st *)io;
+    cjks_sha1_cnsm(sio->sh, b, len);
+}
+
+void cjks_io_sha1_cmpl(cjks_io *io, uint32 v[5]) {
+    struct cjks_io_sha1_st *sio = (struct cjks_io_sha1_st *)io;
+    cjks_sha1_cmpl(sio->sh, v);
 }

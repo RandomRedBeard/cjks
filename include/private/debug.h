@@ -27,7 +27,8 @@ static void showbits(void* buf, int l) {
 }
 
 static void b64print(const uchar* buf, size_t len) {
-    uchar* dst = malloc(((len * 4.0) / 3) + 1);
+    size_t plen = ((len * 4.0) / 3) + 3;
+    uchar* dst = malloc(plen);
     int blen = cjks_b64encode(dst, buf, len);
     printf("%.*s\n", blen, (char*)dst);
     free(dst);

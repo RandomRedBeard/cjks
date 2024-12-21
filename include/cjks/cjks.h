@@ -13,12 +13,15 @@
 #include <cjks/io.h>
 #include <cjks/bits.h>
 #include <cjks/utl.h>
+#include <cjks/sha1io.h>
 
 #define CJKS_PRIVATE_KEY_TAG 1
 #define CJKS_TRUSTED_CERT_TAG 2
 
 static const char cjks_jks_magic_number[] = "\xFE\xED\xFE\xED";
 static const uchar SUN_JKS_ALGO_ID[] = { 43,6,1,4,1,42,2,17,1,1 };
+static const char CJKS_SIGWHITE[] = "Mighty Aphrodite";
+
 
 typedef struct cjks_ca_st {
     char* cert_type;
@@ -94,6 +97,10 @@ CJKS_DLL int cjks_sun_jks_encrypt(const uchar* src, uchar* dest, int dlen, const
 CJKS_DLL cjks* cjks_parse(cjks_io* io, const char* password, size_t len);
 CJKS_DLL cjks* cjks_parse_ex(cjks_io* io, char* password, size_t len, const char* encoding);
 CJKS_DLL cjks* cjks_parse_ex2(const char* pth, char* password, size_t len, const char* encoding);
+
+CJKS_DLL int cjks_write_jks_header(cjks_io* io, cjks* jks);
+CJKS_DLL int cjks_write_jks_entry(cjks_io* io, cjks* jks, const char* password, size_t len);
+CJKS_DLL int cjks_write_jks(cjks_io* io, cjks* jks, const char* password, size_t len);
 
 CJKS_DLL cjks* cjks_get(cjks* jks, const char* alias);
 

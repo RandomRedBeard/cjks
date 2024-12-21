@@ -1,69 +1,102 @@
 #include "test_base.h"
+#include "private/debug.h"
 #include <cjks/cjks.h>
-#include <cjks/sha1io.h>
 
-char SIGWHITE[] = "Mighty Aphrodite";
-
-int cjks_write_jks_header(cjks_io* io, cjks* jks) {
-    cjks_io_write(io, cjks_jks_magic_number, 4);
-    cjks_io_write_be4(io, 2);
-    cjks_io_write_be4(io, jks->n);
-    return 0;
-}
-
-int cjks_write_jks_entry(cjks_io* io, cjks* jks, const char* password, size_t len) {
-    cjks_io_write_be4(io, jks->tag);
-    cjks_io_write_utf(io, jks->alias, strlen(jks->alias));
-    cjks_io_write_be8(io, jks->ts);
-
-    if (jks->tag == CJKS_TRUSTED_CERT_TAG) {
-        cjks_write_ca(io, jks->ca);
-    }
-    else {
-        cjks_write_pk(io, jks->pk, password, len);
-    }
-
-    return 0;
-}
+#include <openssl/x509.h>
+#include <openssl/rsa.h>
+#include <openssl/evp.h>
 
 void test_write_cjks_1() {
     // iconv sux
     uchar pwd[] = "AGMAaABhAG4AZwBlAGkAdA==";
     int plen = cjks_b64decode(pwd, pwd, sizeof(pwd) - 1);
 
-    FILE* fp = cjks_fp_from_res("/keystore");
-    cjks_io* io = cjks_io_fs_new(fp);
-    cjks* jks = cjks_parse_ex(io, "changeit", sizeof("changeit") - 1, "US-ASCII"), * jptr = jks;
+    FILE *fp = cjks_fp_from_res("/keystore");
+    cjks_io *io = cjks_io_fs_new(fp);
+    cjks *jks = cjks_parse_ex(io, "changeit", sizeof("changeit") - 1, "US-ASCII"), *jptr = jks;
     cjks_io_close(io);
     cjks_io_fs_free(io);
 
     fp = fopen("cjks.jks", "wb");
     io = cjks_io_fs_new(fp);
-    cjks_sha1_t* sh = cjks_sha1_new();
 
-    cjks_sha1_cnsm(sh, pwd, plen);
-    cjks_sha1_cnsm(sh, (uchar*)SIGWHITE, sizeof(SIGWHITE) - 1);
+    cjks_write_jks(io, jks, pwd, plen);
 
-    io = cjks_io_sha1_new(io, sh);
-
-    cjks_write_jks_header(io, jks);
-    while (jptr) {
-        cjks_write_jks_entry(io, jptr, pwd, plen);
-        jptr = jptr->next;
-    }
-
-    uchar hash[SHA_DIGEST_LENGTH];
-    cjks_sha1_cmpl(sh, (uint32*)hash);
-
-    io = cjks_io_sha1_free(io, 1);
-
-    cjks_io_write(io, hash, SHA_DIGEST_LENGTH);
     cjks_io_close(io);
     cjks_io_fs_free(io);
 
     cjks_free(jks);
 }
 
+void test_write_cjks_2() {
+    uchar pwd[] = "AGMAaABhAG4AZwBlAGkAdA==";
+    int plen = cjks_b64decode(pwd, pwd, sizeof(pwd) - 1);
+
+    EVP_PKEY *pk = EVP_RSA_gen(2048);
+    char *data = malloc(4096), *buf = data;
+    int i = i2d_PrivateKey(pk, &buf);
+
+    b64print(data, i);
+
+    cjks_pkey *cpk = cjks_pk_new();
+    cpk->key.buf = data;
+    cpk->key.len = i;
+
+    char* kbuf = malloc(4096), *kptr = kbuf;
+    size_t klen = 4096;
+
+    //i = i2d_PublicKey(pk, &kptr);
+    //printf("%d\n", i);
+    //b64print(kbuf, i);
+
+    X509* test = X509_new();
+    i = X509_set_pubkey(test, pk);
+    ASN1_INTEGER_set(X509_get_serialNumber(test), 1);
+    X509_gmtime_adj(X509_get_notBefore(test), 0); // now
+    X509_gmtime_adj(X509_get_notAfter(test), 365 * 24 * 3600); // accepts secs
+
+    i = i2d_X509(test, &kptr);
+    ERR_print_errors_fp(stdout);
+
+    EVP_PKEY_free(pk);
+
+    cjks_ca* ca = cjks_ca_new();
+    ca->cert.buf = kbuf;
+    ca->cert.len = i;
+    ca->cert_type = strdup("RSA");
+    ca->n = 1;
+
+    cpk->cert_chain = ca;
+
+    cjks *jks = cjks_new(CJKS_PRIVATE_KEY_TAG);
+    jks->pk = cpk;
+    jks->alias = strdup("thomas");
+    jks->ts = time(0);
+    jks->n = 1;
+
+    FILE *fp = fopen("cjks.jks", "wb");
+    cjks_io *io = cjks_io_fs_new(fp);
+
+    cjks_write_jks(io, jks, pwd, plen);
+
+    cjks_io_close(io);
+    cjks_io_fs_free(io);
+
+    cjks_free(jks);
+
+
+    fp = fopen("cjks.jks", "rb");
+    io = cjks_io_fs_new(fp);
+    jks = cjks_parse(io, pwd, plen);
+
+    cjks_free(jks);
+
+    cjks_io_close(io);
+    cjks_io_fs_free(io);
+
+}
+
 CJKS_TESTS_ST
 CJKS_TEST(test_write_cjks_1)
+CJKS_TEST(test_write_cjks_2)
 CJKS_TESTS_END

@@ -20,4 +20,7 @@ CJKS_DLL cjks_io* cjks_io_sha1_new(cjks_io*, cjks_sha1_t* sh);
  */
 CJKS_DLL cjks_io* cjks_io_sha1_free(cjks_io*, int own_sha);
 
+CJKS_DLL void cjks_io_sha1_cnsm(cjks_io* io, const uchar* b, size_t len);
+CJKS_DLL void cjks_io_sha1_cmpl(cjks_io* io, uint32 v[5]);
+
 #endif

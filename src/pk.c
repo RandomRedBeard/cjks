@@ -128,6 +128,14 @@ int cjks_write_pk(cjks_io* io, cjks_pkey* pk, const char* password, size_t len) 
     i += tmp;
 
     cjks_ca* ca = pk->cert_chain;
+    if (!ca) {
+        if ((tmp = cjks_io_write_be4(io, 0)) < 0) {
+            return -1;
+        }
+
+        return i + tmp;
+    }
+
     if ((tmp = cjks_io_write_be4(io, ca->n)) < 0) {
         return -1;
     }
