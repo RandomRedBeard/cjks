@@ -35,6 +35,7 @@ void test_write_cjks_2() {
     time_t tm = time(0);
 
     EVP_PKEY* pk = EVP_RSA_gen(2048);
+    printf("gen %d\n", time(0) - tm);
     char* data = malloc(4096), * buf = data;
     int i = i2d_PrivateKey(pk, &buf);
 
