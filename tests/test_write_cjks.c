@@ -62,7 +62,7 @@ void test_write_cjks_2() {
         (unsigned char*)"localhost", -1, -1, 0);
 
     X509_set_issuer_name(test, name);
-    X509_sign(test, pk, EVP_sha1());
+    X509_sign(test, pk, EVP_sha256());
 
     i = i2d_X509(test, &kptr);
     ERR_print_errors_fp(stdout);
