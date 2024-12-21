@@ -11,9 +11,9 @@ void test_write_cjks_1() {
     uchar pwd[] = "AGMAaABhAG4AZwBlAGkAdA==";
     int plen = cjks_b64decode(pwd, pwd, sizeof(pwd) - 1);
 
-    FILE *fp = cjks_fp_from_res("/keystore");
-    cjks_io *io = cjks_io_fs_new(fp);
-    cjks *jks = cjks_parse_ex(io, "changeit", sizeof("changeit") - 1, "US-ASCII"), *jptr = jks;
+    FILE* fp = cjks_fp_from_res("/keystore");
+    cjks_io* io = cjks_io_fs_new(fp);
+    cjks* jks = cjks_parse_ex(io, "changeit", sizeof("changeit") - 1, "US-ASCII"), * jptr = jks;
     cjks_io_close(io);
     cjks_io_fs_free(io);
 
@@ -32,22 +32,18 @@ void test_write_cjks_2() {
     uchar pwd[] = "AGMAaABhAG4AZwBlAGkAdA==";
     int plen = cjks_b64decode(pwd, pwd, sizeof(pwd) - 1);
 
-    EVP_PKEY *pk = EVP_RSA_gen(2048);
-    char *data = malloc(4096), *buf = data;
+    EVP_PKEY* pk = EVP_RSA_gen(2048);
+    char* data = malloc(4096), * buf = data;
     int i = i2d_PrivateKey(pk, &buf);
 
     b64print(data, i);
 
-    cjks_pkey *cpk = cjks_pk_new();
+    cjks_pkey* cpk = cjks_pk_new();
     cpk->key.buf = data;
     cpk->key.len = i;
 
-    char* kbuf = malloc(4096), *kptr = kbuf;
+    char* kbuf = malloc(4096), * kptr = kbuf;
     size_t klen = 4096;
-
-    //i = i2d_PublicKey(pk, &kptr);
-    //printf("%d\n", i);
-    //b64print(kbuf, i);
 
     X509* test = X509_new();
     i = X509_set_pubkey(test, pk);
@@ -55,27 +51,39 @@ void test_write_cjks_2() {
     X509_gmtime_adj(X509_get_notBefore(test), 0); // now
     X509_gmtime_adj(X509_get_notAfter(test), 365 * 24 * 3600); // accepts secs
 
+    X509_NAME* name;
+    name = X509_get_subject_name(test);
+
+    X509_NAME_add_entry_by_txt(name, "C", MBSTRING_ASC,
+        (unsigned char*)"WA", -1, -1, 0);
+    X509_NAME_add_entry_by_txt(name, "O", MBSTRING_ASC,
+        (unsigned char*)"cosmic", -1, -1, 0);
+    X509_NAME_add_entry_by_txt(name, "CN", MBSTRING_ASC,
+        (unsigned char*)"localhost", -1, -1, 0);
+
+    X509_set_issuer_name(test, name);
+    X509_sign(test, pk, EVP_sha1());
+
     i = i2d_X509(test, &kptr);
-    ERR_print_errors_fp(stdout);
 
     EVP_PKEY_free(pk);
 
     cjks_ca* ca = cjks_ca_new();
     ca->cert.buf = kbuf;
     ca->cert.len = i;
-    ca->cert_type = strdup("RSA");
+    ca->cert_type = strdup("X.509");
     ca->n = 1;
 
     cpk->cert_chain = ca;
 
-    cjks *jks = cjks_new(CJKS_PRIVATE_KEY_TAG);
+    cjks* jks = cjks_new(CJKS_PRIVATE_KEY_TAG);
     jks->pk = cpk;
     jks->alias = strdup("thomas");
     jks->ts = time(0);
     jks->n = 1;
 
-    FILE *fp = fopen("cjks.jks", "wb");
-    cjks_io *io = cjks_io_fs_new(fp);
+    FILE* fp = fopen("cjks.jks", "wb");
+    cjks_io* io = cjks_io_fs_new(fp);
 
     cjks_write_jks(io, jks, pwd, plen);
 
