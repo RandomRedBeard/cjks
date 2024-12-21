@@ -67,6 +67,7 @@ void test_write_cjks_2() {
     assert(i > 0);
 
     EVP_PKEY_free(pk);
+    X509_free(test);
 
     cjks_ca* ca = cjks_ca_new();
     ca->cert.buf = kbuf;
