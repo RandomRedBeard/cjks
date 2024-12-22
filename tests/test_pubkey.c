@@ -15,13 +15,20 @@ void test_pubkey_1() {
     X509_NAME* name = X509_get_subject_name(x);
     X509_NAME_print_ex_fp(stdout, name, 0, 0);
 
+    X509_free(x);
+
+    puts("");
+
     x = PEM_read_X509(fp, NULL, NULL, NULL);
     ERR_print_errors_fp(stdout);
 
     name = X509_get_subject_name(x);
     X509_NAME_print_ex_fp(stdout, name, 0, 0);
 
-    fflush(stdout);
+    puts("");
+
+    X509_free(x);
+
 }
 
 CJKS_TESTS_ST
