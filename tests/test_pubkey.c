@@ -8,18 +8,20 @@
 #include <openssl/pem.h>
 
 void test_pubkey_1() {
-    cjks_ca* ca = cjks_ca_new();
-    ca->cert_type = strdup("X.509");
-    cjks_read_from_res("/domain.crt", &ca->cert);
-    ca->n = 1;
-    
-    cjks* jks = cjks_new(CJKS_TRUSTED_CERT_TAG);
-    jks->ca = ca;
-    jks->n = 1;
-    jks->ts = time(0);
-    jks->alias = strdup("ca");
+    FILE* fp = cjks_fp_from_res("/chain.crt");
+    X509* x = PEM_read_X509(fp, NULL, NULL, NULL);
+    ERR_print_errors_fp(stdout);
 
-    cjks_free(jks);
+    X509_NAME* name = X509_get_subject_name(x);
+    X509_NAME_print_ex_fp(stdout, name, 0, 0);
+
+    x = PEM_read_X509(fp, NULL, NULL, NULL);
+    ERR_print_errors_fp(stdout);
+
+    name = X509_get_subject_name(x);
+    X509_NAME_print_ex_fp(stdout, name, 0, 0);
+
+    fflush(stdout);
 }
 
 CJKS_TESTS_ST
