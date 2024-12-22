@@ -19,7 +19,6 @@ void test_pubkey_1() {
     jks->ts = time(0);
     jks->alias = strdup("ca");
 
-
     cjks_free(jks);
 }
 
