@@ -28,7 +28,7 @@ void test_pubkey_1() {
     puts("");
 
     X509_free(x);
-
+    fclose(fp);
 }
 
 CJKS_TESTS_ST
