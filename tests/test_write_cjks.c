@@ -181,6 +181,7 @@ void test_write_cjks_4() {
 
     EVP_PKEY* pk = EVP_PKEY_new();
     EVP_PKEY_set1_DSA(pk, dsa);
+    DSA_free(dsa);
 
     ERR_print_errors_fp(stdout);
 
