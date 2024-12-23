@@ -10,10 +10,10 @@
 void test_pubkey_1() {
     FILE* fp = cjks_fp_from_res("/chain.crt");
 
-    X509* x;
+    X509* x = NULL;
 
     do {
-        X509* x = PEM_read_X509(fp, NULL, NULL, NULL);
+        x = PEM_read_X509(fp, NULL, NULL, NULL);
         ERR_print_errors_fp(stdout);
         if (!x) {
             break;
