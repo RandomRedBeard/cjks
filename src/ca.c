@@ -7,6 +7,7 @@ cjks_ca* cjks_ca_new() {
 cjks_ca* cjks_ca_from_x509(X509* x) {
     cjks_ca* ca = cjks_ca_new();
     int len = i2d_X509(x, NULL);
+    uchar* cacert;
     if (len < 0) {
         cjks_ca_free(ca);
         return NULL;
@@ -14,7 +15,8 @@ cjks_ca* cjks_ca_from_x509(X509* x) {
 
     ca->cert.buf = malloc(len);
     ca->cert.len = len;
-    i2d_X509(x, &ca->cert.buf);
+    cacert = ca->cert.buf;
+    i2d_X509(x, &cacert);
     ca->cert_type = strdup("X.509");
     return ca;
 }
