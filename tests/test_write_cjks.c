@@ -5,6 +5,31 @@
 #include <openssl/x509.h>
 #include <openssl/rsa.h>
 #include <openssl/evp.h>
+#include <openssl/dsa.h>
+#include <openssl/pem.h>
+
+X509* gen_x509(EVP_PKEY* pk) {
+    X509* test = X509_new();
+    int i = X509_set_pubkey(test, pk);
+    ASN1_INTEGER_set(X509_get_serialNumber(test), 1);
+    X509_gmtime_adj(X509_get_notBefore(test), 0); // now
+    X509_gmtime_adj(X509_get_notAfter(test), 365 * 24 * 3600); // accepts secs
+
+    X509_NAME* name;
+    name = X509_get_subject_name(test);
+
+    X509_NAME_add_entry_by_txt(name, "C", MBSTRING_ASC,
+        (unsigned char*)"WA", -1, -1, 0);
+    X509_NAME_add_entry_by_txt(name, "O", MBSTRING_ASC,
+        (unsigned char*)"cosmic", -1, -1, 0);
+    X509_NAME_add_entry_by_txt(name, "CN", MBSTRING_ASC,
+        (unsigned char*)"localhost", -1, -1, 0);
+
+    X509_set_issuer_name(test, name);
+    X509_sign(test, pk, EVP_sha256());
+
+    return test;
+}
 
 void test_write_cjks_1() {
     // iconv sux
@@ -42,25 +67,8 @@ void test_write_cjks_2() {
     cjks_pkey* cpk = cjks_pk_new();
     cpk->key.buf = data;
     cpk->key.len = i;
-    
-    X509* test = X509_new();
-    i = X509_set_pubkey(test, pk);
-    ASN1_INTEGER_set(X509_get_serialNumber(test), 1);
-    X509_gmtime_adj(X509_get_notBefore(test), 0); // now
-    X509_gmtime_adj(X509_get_notAfter(test), 365 * 24 * 3600); // accepts secs
 
-    X509_NAME* name;
-    name = X509_get_subject_name(test);
-
-    X509_NAME_add_entry_by_txt(name, "C", MBSTRING_ASC,
-        (unsigned char*)"WA", -1, -1, 0);
-    X509_NAME_add_entry_by_txt(name, "O", MBSTRING_ASC,
-        (unsigned char*)"cosmic", -1, -1, 0);
-    X509_NAME_add_entry_by_txt(name, "CN", MBSTRING_ASC,
-        (unsigned char*)"localhost", -1, -1, 0);
-
-    X509_set_issuer_name(test, name);
-    X509_sign(test, pk, EVP_sha256());
+    X509* test = gen_x509(pk);
 
     cjks_ca* ca = cjks_ca_from_x509(test);
 
@@ -97,24 +105,7 @@ void test_write_cjks_3() {
 
     EVP_PKEY* pk = EVP_RSA_gen(2048);
 
-    X509* test = X509_new();
-    int i = X509_set_pubkey(test, pk);
-    ASN1_INTEGER_set(X509_get_serialNumber(test), 1);
-    X509_gmtime_adj(X509_get_notBefore(test), 0); // now
-    X509_gmtime_adj(X509_get_notAfter(test), 365 * 24 * 3600); // accepts secs
-
-    X509_NAME* name;
-    name = X509_get_subject_name(test);
-
-    X509_NAME_add_entry_by_txt(name, "C", MBSTRING_ASC,
-        (unsigned char*)"WA", -1, -1, 0);
-    X509_NAME_add_entry_by_txt(name, "O", MBSTRING_ASC,
-        (unsigned char*)"cosmic", -1, -1, 0);
-    X509_NAME_add_entry_by_txt(name, "CN", MBSTRING_ASC,
-        (unsigned char*)"localhost", -1, -1, 0);
-
-    X509_set_issuer_name(test, name);
-    X509_sign(test, pk, EVP_sha256());
+    X509* test = gen_x509(pk);
 
     cjks_ca* ca = cjks_ca_from_x509(test);
 
@@ -141,9 +132,6 @@ void test_write_cjks_3() {
     cjks_free(jks);
 }
 
-#include <openssl/dsa.h>
-#include <openssl/pem.h>
-
 void test_write_cjks_4() {
     uchar pwd[] = "AGMAaABhAG4AZwBlAGkAdA==";
     int plen = cjks_b64decode(pwd, pwd, sizeof(pwd) - 1);
@@ -163,27 +151,7 @@ void test_write_cjks_4() {
     ERR_print_errors_fp(stdout);
 
     printf("x509\n");
-
-    X509* test = X509_new();
-    assert(test);
-    int i = X509_set_pubkey(test, pk);
-    printf("set %d\n", i);
-    ASN1_INTEGER_set(X509_get_serialNumber(test), 1);
-    X509_gmtime_adj(X509_get_notBefore(test), 0); // now
-    X509_gmtime_adj(X509_get_notAfter(test), 365 * 24 * 3600); // accepts secs
-
-    X509_NAME* name;
-    name = X509_get_subject_name(test);
-
-    X509_NAME_add_entry_by_txt(name, "C", MBSTRING_ASC,
-        (unsigned char*)"WA", -1, -1, 0);
-    X509_NAME_add_entry_by_txt(name, "O", MBSTRING_ASC,
-        (unsigned char*)"cosmic", -1, -1, 0);
-    X509_NAME_add_entry_by_txt(name, "CN", MBSTRING_ASC,
-        (unsigned char*)"localhost", -1, -1, 0);
-
-    X509_set_issuer_name(test, name);
-    X509_sign(test, pk, EVP_sha256());
+    X509* test = gen_x509(pk);
 
     cjks_ca* ca = cjks_ca_from_x509(test);
 
