@@ -1,6 +1,6 @@
 #include "cjks/cjks.h"
 
-cjks *cjks_parse(cjks_io *io, const char *password, size_t len) {
+cjks* cjks_parse(cjks_io* io, const char* password, size_t len) {
     char header[4];
     cjks_io_read(io, header, 4);
 
@@ -18,7 +18,7 @@ cjks *cjks_parse(cjks_io *io, const char *password, size_t len) {
 
     uint32 entry_count = cjks_io_read_be4(io);
 
-    cjks *p1 = NULL, *p2 = NULL, *tmp;
+    cjks* p1 = NULL, * p2 = NULL, * tmp;
     for (int i = entry_count - 1; i >= 0; i--) {
         uint32 tag = cjks_io_read_be4(io);
         tmp = cjks_new(tag);
@@ -57,8 +57,8 @@ cjks *cjks_parse(cjks_io *io, const char *password, size_t len) {
     return p1;
 }
 
-cjks *cjks_parse_ex(cjks_io *io, char *password, size_t len, const char *encoding) {
-    char epwd[128], *ptr = epwd;
+cjks* cjks_parse_ex(cjks_io* io, char* password, size_t len, const char* encoding) {
+    char epwd[128], * ptr = epwd;
     size_t epwd_len = 128;
 
     iconv_t cnv = iconv_open("UTF-16BE", encoding);
@@ -74,21 +74,21 @@ cjks *cjks_parse_ex(cjks_io *io, char *password, size_t len, const char *encodin
     return cjks_parse(io, epwd, epwd_len);
 }
 
-cjks *cjks_parse_ex2(const char *pth, char *password, size_t len, const char *encoding) {
-    FILE *fp = fopen(pth, "rb");
+cjks* cjks_parse_ex2(const char* pth, char* password, size_t len, const char* encoding) {
+    FILE* fp = fopen(pth, "rb");
     if (!fp) {
         return NULL;
     }
 
-    cjks_io *io = cjks_io_fs_new(fp);
-    cjks *jks = cjks_parse_ex(io, password, len, encoding);
+    cjks_io* io = cjks_io_fs_new(fp);
+    cjks* jks = cjks_parse_ex(io, password, len, encoding);
     cjks_io_fs_free(io);
     fclose(fp);
     return jks;
 }
 
 
-int cjks_write_jks_header(cjks_io *io, cjks *jks) {
+int cjks_write_jks_header(cjks_io* io, cjks* jks) {
     int r = 0, tmp;
     if ((tmp = cjks_io_write(io, &JKS_MAGIC_NUMBER, 4)) < 0) {
         return -1;
@@ -104,7 +104,7 @@ int cjks_write_jks_header(cjks_io *io, cjks *jks) {
     return  r + tmp;
 }
 
-int cjks_write_jks_entry(cjks_io *io, cjks *jks, const char *password, size_t len) {
+int cjks_write_jks_entry(cjks_io* io, cjks* jks, const char* password, size_t len) {
     int r = 0, tmp;
     if ((tmp = cjks_io_write_be4(io, jks->tag)) < 0) {
         return -1;
@@ -133,13 +133,13 @@ int cjks_write_jks_entry(cjks_io *io, cjks *jks, const char *password, size_t le
     return r + tmp;
 }
 
-int cjks_write_jks(cjks_io *io, cjks *jks, const char *password, size_t len) {
+int cjks_write_jks(cjks_io* io, cjks* jks, const char* password, size_t len) {
     int tmp;
     uint32 r = 0;
     io = cjks_io_sha1_new(io, NULL);
 
-    cjks_io_sha1_cnsm(io, password, len);
-    cjks_io_sha1_cnsm(io, (uchar *)CJKS_SIGWHITE, sizeof(CJKS_SIGWHITE) - 1);
+    cjks_io_sha1_cnsm(io, (const uchar*)password, len);
+    cjks_io_sha1_cnsm(io, CJKS_SIGWHITE, sizeof(CJKS_SIGWHITE) - 1);
 
     if ((tmp = cjks_write_jks_header(io, jks)) < 0) {
         cjks_io_sha1_free(io, 1);
@@ -156,7 +156,7 @@ int cjks_write_jks(cjks_io *io, cjks *jks, const char *password, size_t len) {
     }
 
     uchar hash[SHA_DIGEST_LENGTH];
-    cjks_io_sha1_cmpl(io, (uint32 *)hash);
+    cjks_io_sha1_cmpl(io, (uint32*)hash);
 
     io = cjks_io_sha1_free(io, 1);
     if ((tmp = cjks_io_write(io, hash, SHA_DIGEST_LENGTH)) < 0) {
@@ -166,7 +166,7 @@ int cjks_write_jks(cjks_io *io, cjks *jks, const char *password, size_t len) {
     return r + tmp;
 }
 
-cjks *cjks_get(cjks *jks, const char *alias) {
+cjks* cjks_get(cjks* jks, const char* alias) {
     while (jks) {
         if (strcmp(jks->alias, alias) == 0) {
             return jks;
@@ -176,34 +176,34 @@ cjks *cjks_get(cjks *jks, const char *alias) {
     return NULL;
 }
 
-cjks *cjks_new(int tag) {
-    cjks *e = calloc(1, sizeof(cjks));
+cjks* cjks_new(int tag) {
+    cjks* e = calloc(1, sizeof(cjks));
     e->tag = tag;
     return e;
 }
 
-void cjks_free(cjks *jks) {
-    cjks *n;
+void cjks_free(cjks* jks) {
+    cjks* n;
     do {
         n = jks->next;
         free(jks->alias);
         switch (jks->tag) {
         case CJKS_PRIVATE_KEY_TAG:
-        cjks_pk_free(jks->pk);
-        break;
+            cjks_pk_free(jks->pk);
+            break;
         case CJKS_TRUSTED_CERT_TAG:
-        cjks_ca_free(jks->ca);
-        break;
+            cjks_ca_free(jks->ca);
+            break;
         }
         free(jks);
         jks = n;
     } while (jks);
 }
 
-void cjks_sun_jks_crypt(const uchar *src, uchar *dest, size_t len, uchar *iv, const char *password, size_t plen) {
-    uchar *ivptr = iv, *ivptrend = iv + SHA_DIGEST_LENGTH;
-    uchar *dptr = dest;
-    const uchar *sptr = src, *sptrend = src + len;
+void cjks_sun_jks_crypt(const uchar* src, uchar* dest, size_t len, uchar* iv, const char* password, size_t plen) {
+    uchar* ivptr = iv, * ivptrend = iv + SHA_DIGEST_LENGTH;
+    uchar* dptr = dest;
+    const uchar* sptr = src, * sptrend = src + len;
 
     cjks_sha1(iv, 2, password, plen, iv, (size_t)20);
     while (sptr != sptrend) {
@@ -215,7 +215,7 @@ void cjks_sun_jks_crypt(const uchar *src, uchar *dest, size_t len, uchar *iv, co
     }
 }
 
-int cjks_sun_jks_decrypt(const uchar *data, uchar *dest, int len, const char *password, size_t plen) {
+int cjks_sun_jks_decrypt(const uchar* data, uchar* dest, int len, const char* password, size_t plen) {
     uchar iv[SHA_DIGEST_LENGTH];
     uchar sha[SHA_DIGEST_LENGTH];
     size_t dlen = len - (SHA_DIGEST_LENGTH * 2);
@@ -229,7 +229,7 @@ int cjks_sun_jks_decrypt(const uchar *data, uchar *dest, int len, const char *pa
     return cjks_sha1_cmp(sha, 2, password, plen, dest, dlen);
 }
 
-int cjks_sun_jks_encrypt(const uchar *src, uchar *dest, int dlen, const char *password, size_t plen) {
+int cjks_sun_jks_encrypt(const uchar* src, uchar* dest, int dlen, const char* password, size_t plen) {
     uchar iv[SHA_DIGEST_LENGTH];
 
     // Generate new IV
@@ -245,7 +245,7 @@ int cjks_sun_jks_encrypt(const uchar *src, uchar *dest, int dlen, const char *pa
     return 0;
 }
 
-EVP_PKEY *cjks_2evp2(const cjks *jks) {
+EVP_PKEY* cjks_2evp2(const cjks* jks) {
     if (jks->tag != CJKS_PRIVATE_KEY_TAG) {
         return NULL;
     }
