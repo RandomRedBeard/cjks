@@ -134,7 +134,8 @@ int cjks_write_jks_entry(cjks_io *io, cjks *jks, const char *password, size_t le
 }
 
 int cjks_write_jks(cjks_io *io, cjks *jks, const char *password, size_t len) {
-    uint32 r = 0, tmp;
+    int tmp;
+    uint32 r = 0;
     io = cjks_io_sha1_new(io, NULL);
 
     cjks_io_sha1_cnsm(io, password, len);
