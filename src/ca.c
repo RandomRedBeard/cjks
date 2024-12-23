@@ -14,7 +14,7 @@ cjks_ca* cjks_ca_from_x509(X509* x) {
 
     ca->cert.buf = malloc(len);
     ca->cert.len = len;
-    i2d_X509(x, ca->cert.buf);
+    i2d_X509(x, &ca->cert.buf);
     ca->cert_type = strdup("X.509");
     return ca;
 }
