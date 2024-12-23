@@ -1,4 +1,5 @@
 #include "test_base.h"
+#include "private/debug.h"
 
 #include <cjks/cjks.h>
 

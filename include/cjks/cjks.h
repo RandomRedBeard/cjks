@@ -18,10 +18,9 @@
 #define CJKS_PRIVATE_KEY_TAG 1
 #define CJKS_TRUSTED_CERT_TAG 2
 
-static const char cjks_jks_magic_number[] = "\xFE\xED\xFE\xED";
+static const uint32 JKS_MAGIC_NUMBER = 0XEDFEEDFE;
 static const uchar SUN_JKS_ALGO_ID[] = { 43,6,1,4,1,42,2,17,1,1 };
 static const char CJKS_SIGWHITE[] = "Mighty Aphrodite";
-
 
 typedef struct cjks_ca_st {
     char* cert_type;

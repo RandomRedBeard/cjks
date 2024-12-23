@@ -5,7 +5,7 @@ cjks *cjks_parse(cjks_io *io, const char *password, size_t len) {
     cjks_io_read(io, header, 4);
 
     // Not magic header
-    if (memcmp(cjks_jks_magic_number, header, 4) != 0) {
+    if (memcmp(&JKS_MAGIC_NUMBER, header, 4) != 0) {
         return NULL;
     }
 
@@ -90,7 +90,7 @@ cjks *cjks_parse_ex2(const char *pth, char *password, size_t len, const char *en
 
 int cjks_write_jks_header(cjks_io *io, cjks *jks) {
     int r = 0, tmp;
-    if ((tmp = cjks_io_write(io, cjks_jks_magic_number, 4)) < 0) {
+    if ((tmp = cjks_io_write(io, &JKS_MAGIC_NUMBER, 4)) < 0) {
         return -1;
     }
     r += tmp;
