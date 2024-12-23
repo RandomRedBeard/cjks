@@ -4,6 +4,21 @@ cjks_ca* cjks_ca_new() {
     return calloc(1, sizeof(cjks_ca));
 }
 
+cjks_ca* cjks_ca_from_x509(X509* x) {
+    cjks_ca* ca = cjks_ca_new();
+    int len = i2d_X509(x, NULL);
+    if (len < 0) {
+        cjks_ca_free(ca);
+        return NULL;
+    }
+
+    ca->cert.buf = malloc(len);
+    ca->cert.len = len;
+    i2d_X509(x, ca->cert.buf);
+    ca->cert_type = strdup("X.509");
+    return ca;
+}
+
 void cjks_ca_free(cjks_ca* ca) {
     cjks_ca* n;
     do {

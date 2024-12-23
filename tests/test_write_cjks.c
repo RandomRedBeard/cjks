@@ -65,20 +65,12 @@ void test_write_cjks_2() {
     X509_set_issuer_name(test, name);
     X509_sign(test, pk, EVP_sha256());
 
-    i = i2d_X509(test, &kptr);
-    ERR_print_errors_fp(stdout);
-    assert(i > 0);
+    cjks_ca* ca = cjks_ca_from_x509(test);
 
     EVP_PKEY_free(pk);
     X509_free(test);
 
     printf("EVP %d\n", time(0) - tm);
-
-    cjks_ca* ca = cjks_ca_new();
-    ca->cert.buf = kbuf;
-    ca->cert.len = i;
-    ca->cert_type = strdup("X.509");
-    ca->n = 1;
 
     cpk->cert_chain = ca;
 
@@ -86,7 +78,6 @@ void test_write_cjks_2() {
     jks->pk = cpk;
     jks->alias = strdup("thomas");
     jks->ts = time(0);
-    jks->n = 1;
 
     FILE* fp = fopen("cjks.jks", "wb");
     cjks_io* io = cjks_io_fs_new(fp);
@@ -130,26 +121,17 @@ void test_write_cjks_3() {
     X509_set_issuer_name(test, name);
     X509_sign(test, pk, EVP_sha256());
 
-    i = i2d_X509(test, &kptr);
-    ERR_print_errors_fp(stdout);
-    assert(i > 0);
+    cjks_ca* ca = cjks_ca_from_x509(test);
 
     EVP_PKEY_free(pk);
     X509_free(test);
 
     printf("EVP %d\n", time(0) - tm);
 
-    cjks_ca* ca = cjks_ca_new();
-    ca->cert.buf = kbuf;
-    ca->cert.len = i;
-    ca->cert_type = strdup("X.509");
-    ca->n = 1;
-
     cjks* jks = cjks_new(CJKS_TRUSTED_CERT_TAG);
     jks->ca = ca;
     jks->alias = strdup("thomas");
     jks->ts = time(0);
-    jks->n = 1;
 
     FILE* fp = fopen("cjks.jks", "wb");
     cjks_io* io = cjks_io_fs_new(fp);
@@ -213,26 +195,17 @@ void test_write_cjks_4() {
     X509_set_issuer_name(test, name);
     X509_sign(test, pk, EVP_sha256());
 
-    i = i2d_X509(test, &kptr);
-    ERR_print_errors_fp(stdout);
-    assert(i > 0);
+    cjks_ca* ca = cjks_ca_from_x509(test);
 
     EVP_PKEY_free(pk);
     X509_free(test);
 
     printf("EVP %d\n", time(0) - tm);
 
-    cjks_ca* ca = cjks_ca_new();
-    ca->cert.buf = kbuf;
-    ca->cert.len = i;
-    ca->cert_type = strdup("X.509");
-    ca->n = 1;
-
     cjks* jks = cjks_new(CJKS_TRUSTED_CERT_TAG);
     jks->ca = ca;
     jks->alias = strdup("thomas123");
     jks->ts = time(0);
-    jks->n = 1;
 
     FILE* fp = fopen("cjks.jks", "wb");
     cjks_io* io = cjks_io_fs_new(fp);
