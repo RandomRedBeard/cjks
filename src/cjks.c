@@ -19,7 +19,7 @@ cjks *cjks_parse(cjks_io *io, const char *password, size_t len) {
     uint32 entry_count = cjks_io_read_be4(io);
 
     cjks *p1 = NULL, *p2 = NULL, *tmp;
-    for (uint32 i = entry_count; i > 0; i--) {
+    for (int i = entry_count - 1; i >= 0; i--) {
         uint32 tag = cjks_io_read_be4(io);
         tmp = cjks_new(tag);
         tmp->alias = cjks_io_aread_utf(io);
@@ -98,7 +98,7 @@ int cjks_write_jks_header(cjks_io *io, cjks *jks) {
         return -1;
     }
     r += tmp;
-    if ((tmp = cjks_io_write_be4(io, jks->n)) < 0) {
+    if ((tmp = cjks_io_write_be4(io, jks->n + 1)) < 0) {
         return -1;
     }
     return  r + tmp;

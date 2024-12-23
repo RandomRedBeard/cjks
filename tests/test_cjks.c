@@ -8,7 +8,7 @@ void validate_jks(cjks *jks) {
     uint32 cnt = 0;
 
     // 0-based indexing on entries
-    assert(jptr->n == 3);
+    assert(jptr->n == 2);
 
     while (jptr) {
         printf("%d - %s\n", jptr->tag, jptr->alias);
@@ -73,7 +73,7 @@ void test_chain() {
     if (!d2i_X509(&x509_cert, &cert, cert_len)) {
         ERR_print_errors_fp(stderr);
     }
-
+    assert(x509_cert);
     X509_free(x509_cert);
 
     cjks_free(jks);
@@ -89,7 +89,7 @@ void test_chain2() {
     assert(jks->tag == CJKS_PRIVATE_KEY_TAG);
 
     cjks_ca* ca = jks->pk->cert_chain;
-    assert(ca->n == 3);
+    assert(ca->n == 2);
     uint16 cnt = 0;
     while (ca) {
         printf("Count - %d\n", ca->n);

@@ -9,25 +9,23 @@
 
 void test_pubkey_1() {
     FILE* fp = cjks_fp_from_res("/chain.crt");
-    X509* x = PEM_read_X509(fp, NULL, NULL, NULL);
-    ERR_print_errors_fp(stdout);
 
-    X509_NAME* name = X509_get_subject_name(x);
-    X509_NAME_print_ex_fp(stdout, name, 0, 0);
+    X509* x;
 
-    X509_free(x);
+    do {
+        X509* x = PEM_read_X509(fp, NULL, NULL, NULL);
+        ERR_print_errors_fp(stdout);
+        if (!x) {
+            break;
+        }
 
-    puts("");
+        X509_NAME* name = X509_get_subject_name(x);
+        X509_NAME_print_ex_fp(stdout, name, 0, 0);
 
-    x = PEM_read_X509(fp, NULL, NULL, NULL);
-    ERR_print_errors_fp(stdout);
+        puts("");
 
-    name = X509_get_subject_name(x);
-    X509_NAME_print_ex_fp(stdout, name, 0, 0);
-
-    puts("");
-
-    X509_free(x);
+        X509_free(x);
+    } while (x);
     fclose(fp);
 }
 

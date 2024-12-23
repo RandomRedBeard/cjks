@@ -18,7 +18,7 @@ int cjks_parse_pk(cjks_io* io, cjks_pkey* pk) {
 
     uint32 chain_len = cjks_io_read_be4(io);
     cjks_ca* p1 = NULL, * p2 = NULL, * tmp;
-    for (uint32 i = chain_len; i > 0; i--) {
+    for (int i = chain_len - 1; i >= 0; i--) {
         tmp = cjks_ca_new();
         tmp->n = i;
         cjks_parse_ca(io, tmp);
@@ -136,7 +136,7 @@ int cjks_write_pk(cjks_io* io, cjks_pkey* pk, const char* password, size_t len) 
         return i + tmp;
     }
 
-    if ((tmp = cjks_io_write_be4(io, ca->n)) < 0) {
+    if ((tmp = cjks_io_write_be4(io, ca->n + 1)) < 0) {
         return -1;
     }
 
