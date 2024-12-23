@@ -42,10 +42,7 @@ void test_write_cjks_2() {
     cjks_pkey* cpk = cjks_pk_new();
     cpk->key.buf = data;
     cpk->key.len = i;
-
-    char* kbuf = malloc(4096), * kptr = kbuf;
-    size_t klen = 4096;
-
+    
     X509* test = X509_new();
     i = X509_set_pubkey(test, pk);
     ASN1_INTEGER_set(X509_get_serialNumber(test), 1);
@@ -99,8 +96,6 @@ void test_write_cjks_3() {
     time_t tm = time(0);
 
     EVP_PKEY* pk = EVP_RSA_gen(2048);
-    char* kbuf = malloc(4096), * kptr = kbuf;
-    size_t klen = 4096;
 
     X509* test = X509_new();
     int i = X509_set_pubkey(test, pk);
@@ -164,11 +159,6 @@ void test_write_cjks_4() {
     EVP_PKEY* pk = EVP_PKEY_new();
     EVP_PKEY_set1_DSA(pk, dsa);
     DSA_free(dsa);
-
-    ERR_print_errors_fp(stdout);
-
-    char* kbuf = malloc(4096), * kptr = kbuf;
-    size_t klen = 4096;
 
     ERR_print_errors_fp(stdout);
 
