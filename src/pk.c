@@ -90,20 +90,18 @@ int cjks_encrypt_pk(cjks_pkey* pk, const char* password, size_t len) {
     // Clear eber, since we will write to it
     cjks_buf_clear(&pk->encrypted_ber);
 
-    // Length of X509_SIG->digest should be pk->key.len + (SHA_DIGEST_LENGTH * 2)
-    uchar* ekey = malloc(pk->key.len + 40);
-
-    cjks_sun_jks_encrypt(pk->key.buf, ekey, pk->key.len, password, len);
-
     sig = X509_SIG_new();
-
     X509_SIG_getm(sig, &palg, &pdigest);
+
+    // Length of X509_SIG->digest should be pk->key.len + (SHA_DIGEST_LENGTH * 2)
+    pdigest->length = pk->key.len + 40;
+    pdigest->data = OPENSSL_realloc(pdigest->data, pdigest->length);
+
+    // Encrypt pk
+    cjks_sun_jks_encrypt(pk->key.buf, pdigest->data, pk->key.len, password, len);
 
     obj = OBJ_txt2obj("1.3.6.1.4.1.42.2.17.1.1", 1);
     int i = X509_ALGOR_set0(palg, obj, V_ASN1_NULL, NULL);
-
-    ASN1_OCTET_STRING_set(pdigest, ekey, pk->key.len + 40);
-    free(ekey);
 
     int slen = i2d_X509_SIG(sig, NULL);
     pk->encrypted_ber.buf = malloc(slen);
