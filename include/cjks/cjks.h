@@ -53,6 +53,7 @@ typedef struct cjks_entry_st {
 
 CJKS_DLL cjks_ca* cjks_ca_new();
 CJKS_DLL cjks_ca* cjks_ca_from_x509(X509*);
+CJKS_DLL cjks_ca* cjks_ca_add(cjks_ca* src, cjks_ca* dst);
 CJKS_DLL void cjks_ca_free(cjks_ca* ca);
 CJKS_DLL int cjks_parse_ca(cjks_io* io, cjks_ca* ca);
 CJKS_DLL int cjks_write_ca(cjks_io* io, cjks_ca* ca);

@@ -21,6 +21,14 @@ cjks_ca* cjks_ca_from_x509(X509* x) {
     return ca;
 }
 
+cjks_ca* cjks_ca_add(cjks_ca* src, cjks_ca* dst) {
+    if (src) {
+        dst->n = src->n + 1;
+    }
+    dst->next = src;
+    return dst;
+}
+
 void cjks_ca_free(cjks_ca* ca) {
     cjks_ca* n;
     do {

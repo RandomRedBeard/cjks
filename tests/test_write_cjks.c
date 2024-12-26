@@ -71,6 +71,7 @@ void test_write_cjks_2() {
     X509* test = gen_x509(pk);
 
     cjks_ca* ca = cjks_ca_from_x509(test);
+    ca = cjks_ca_add(ca, cjks_ca_from_x509(test));
 
     EVP_PKEY_free(pk);
     X509_free(test);

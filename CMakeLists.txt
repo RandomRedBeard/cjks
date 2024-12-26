@@ -108,6 +108,8 @@ if (${CJKS_TEST})
     endforeach()
 endif()
 
+add_executable(cjkstool ${CMAKE_CURRENT_SOURCE_DIR}/cli/cjks.c)
+target_link_libraries(cjkstool ${CJKS_LINKS} cjks)
 
 # INSTALL Section
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/library_config/libcjks.pc.in"
@@ -119,7 +121,7 @@ install(
 )
 
 install(
-    TARGETS cjks
+    TARGETS cjks cjkstool
     EXPORT cjks_targets
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/cjks
 )
