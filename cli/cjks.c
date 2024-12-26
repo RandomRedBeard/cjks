@@ -42,7 +42,7 @@ void print_jks(cjks* jks) {
 int main(int argc, char** argv) {
     time_t tm = time(0);
     cjks* jks = cjks_parse_ex2(argv[1], "changeit", sizeof("changeit") - 1, "US-ASCII");
-    // print_jks(jks);
+    print_jks(jks);
     cjks_free(jks);
     printf("%ld\n", time(0) - tm);
 
