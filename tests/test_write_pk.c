@@ -14,7 +14,7 @@ void test_pk_write() {
 
     uchar pk_buf[4096];
     cjks_io* io = cjks_io_mem_new(pk_buf, sizeof(pk_buf));
-    int pk_buf_len = cjks_write_pk(io, jptr->pk, pwd, plen);
+    int pk_buf_len = cjks_write_pk(io, jptr->pk, (const char*)pwd, plen);
     printf("buf %d\n", pk_buf_len);
 
     assert(pk_buf_len > 0);

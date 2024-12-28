@@ -45,7 +45,7 @@ void test_write_cjks_1() {
     fp = fopen("cjks.jks", "wb");
     io = cjks_io_fs_new(fp);
 
-    cjks_write_jks(io, jks, pwd, plen);
+    cjks_write_jks(io, jks, (const char*)pwd, plen);
 
     cjks_io_close(io);
     cjks_io_fs_free(io);
@@ -60,7 +60,7 @@ void test_write_cjks_2() {
     time_t tm = time(0);
 
     EVP_PKEY* pk = EVP_RSA_gen(2048);
-    printf("gen %d\n", time(0) - tm);
+    printf("gen %ld\n", time(0) - tm);
     uchar* data = malloc(4096), * buf = data;
     int i = i2d_PrivateKey(pk, &buf);
 
@@ -90,7 +90,7 @@ void test_write_cjks_2() {
 
     tm = time(0);
     cjks_write_jks(io, jks, pwd, plen);
-    printf("%d\n", time(0) - tm);
+    printf("%ld\n", time(0) - tm);
 
     cjks_io_close(io);
     cjks_io_fs_free(io);
@@ -113,7 +113,7 @@ void test_write_cjks_3() {
     EVP_PKEY_free(pk);
     X509_free(test);
 
-    printf("EVP %d\n", time(0) - tm);
+    printf("EVP %ld\n", time(0) - tm);
 
     cjks* jks = cjks_new(CJKS_TRUSTED_CERT_TAG);
     jks->ca = ca;
@@ -124,8 +124,8 @@ void test_write_cjks_3() {
     cjks_io* io = cjks_io_fs_new(fp);
 
     tm = time(0);
-    cjks_write_jks(io, jks, pwd, plen);
-    printf("%d\n", time(0) - tm);
+    cjks_write_jks(io, jks, (const char*)pwd, plen);
+    printf("%ld\n", time(0) - tm);
 
     cjks_io_close(io);
     cjks_io_fs_free(io);
@@ -159,7 +159,7 @@ void test_write_cjks_4() {
     EVP_PKEY_free(pk);
     X509_free(test);
 
-    printf("EVP %d\n", time(0) - tm);
+    printf("EVP %ld\n", time(0) - tm);
 
     cjks* jks = cjks_new(CJKS_TRUSTED_CERT_TAG);
     jks->ca = ca;
@@ -170,8 +170,8 @@ void test_write_cjks_4() {
     cjks_io* io = cjks_io_fs_new(fp);
 
     tm = time(0);
-    cjks_write_jks(io, jks, pwd, plen);
-    printf("%d\n", time(0) - tm);
+    cjks_write_jks(io, jks, (const char*)pwd, plen);
+    printf("%ld\n", time(0) - tm);
 
     cjks_io_close(io);
     cjks_io_fs_free(io);
