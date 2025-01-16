@@ -102,6 +102,7 @@ CJKS_DLL cjks* cjks_parse_ex2(const char* pth, char* password, size_t len, const
 CJKS_DLL int cjks_write_jks_header(cjks_io* io, cjks* jks);
 CJKS_DLL int cjks_write_jks_entry(cjks_io* io, cjks* jks, const char* password, size_t len);
 CJKS_DLL int cjks_write_jks(cjks_io* io, cjks* jks, const char* password, size_t len);
+CJKS_DLL int cjks_write_jks_ex(cjks_io* io, cjks* jks, char* password, size_t len, const char* encoding);
 
 CJKS_DLL cjks* cjks_get(cjks* jks, const char* alias);
 

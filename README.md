@@ -17,6 +17,19 @@ cjks* ca = cjks_get(jks, "cert");
 assert(ca->tag == CJKS_TRUSTED_CERT_TAG);
 ```
 
+## write
+```
+cjks* jks;
+
+FILE* fp = fopen("cjks.jks", "wb");
+cjks_io* io = cjks_io_fs_new(fp);
+
+cjks_write_jks_ex(io, jks, "changeit", sizeof("changeit) - 1);
+
+cjks_io_close(io);
+cjks_io_fs_free(io);
+```
+
 ## evp
 ```
 cjks* pk = cjks_get(jks, "mytestkey");
