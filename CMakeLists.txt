@@ -7,6 +7,9 @@ include(CTest)
 include(CheckIncludeFile)
 include(CheckSourceCompiles)
 
+# OSX
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
 # Valgrind memcheck
 find_program(MEMORYCHECK_COMMAND valgrind)
 set(MEMORYCHECK_COMMAND_OPTIONS "--leak-check=full --show-leak-kinds=all")
