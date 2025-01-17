@@ -101,7 +101,11 @@ int cjks_encrypt_pk(cjks_pkey* pk, const char* password, size_t len) {
     cjks_sun_jks_encrypt(pk->key.buf, pdigest->data, pk->key.len, password, len);
 
     obj = OBJ_txt2obj("1.3.6.1.4.1.42.2.17.1.1", 1);
-    int i = X509_ALGOR_set0(palg, obj, V_ASN1_NULL, NULL);
+    if (X509_ALGOR_set0(palg, obj, V_ASN1_NULL, NULL) < 0) {
+        ASN1_OBJECT_free(obj);
+        X509_SIG_free(sig);
+        return -1;
+    }
 
     int slen = i2d_X509_SIG(sig, NULL);
     pk->encrypted_ber.buf = malloc(slen);
@@ -117,7 +121,9 @@ int cjks_encrypt_pk(cjks_pkey* pk, const char* password, size_t len) {
 
 int cjks_write_pk(cjks_io* io, cjks_pkey* pk, const char* password, size_t len) {
     int i = 0, tmp;
-    cjks_encrypt_pk(pk, password, len);
+    if (cjks_encrypt_pk(pk, password, len) < 0) {
+        return -1;
+    }
 
     if ((tmp = cjks_io_write_data(io, &pk->encrypted_ber)) < 0) {
         return -1;
