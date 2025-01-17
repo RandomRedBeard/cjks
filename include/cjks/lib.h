@@ -13,4 +13,9 @@
     #define CJKS_DLL
 #endif // _WIN32
 
+typedef unsigned short uint16;
+typedef unsigned int uint32;
+typedef unsigned long long uint64;
+typedef unsigned char uchar;
+
 #endif // Header

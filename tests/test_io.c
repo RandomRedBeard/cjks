@@ -33,21 +33,15 @@ void test_fs_be2() {
     char be2[] = {0x0, 0x1};
     cjks_io_write(io, be2, 2);
     rewind(fp);
-    unsigned short s = cjks_io_read_be2(io);
+    uint16 s = cjks_io_read_be2(io);
     assert(s == 1);
 
     cjks_io_close(io);
     cjks_io_fs_free(io);
 }
 
-test_st tests[] = {
-    {"mem", test_mem},
-    {"fs", test_fs},
-    {"fs_be2", test_fs_be2},
-    {NULL, NULL}
-};
-
-int main() {
-    cjks_run_tests(tests);
-    return 0;
-}
+CJKS_TESTS_ST
+    CJKS_TEST(test_mem)
+    CJKS_TEST(test_fs)
+    CJKS_TEST(test_fs_be2)
+CJKS_TESTS_END
