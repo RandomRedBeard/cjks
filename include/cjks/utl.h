@@ -1,7 +1,6 @@
 #ifndef CJKS_UTL_H
 #define CJKS_UTL_H
 
-
 #include <string.h>
 #include <stdarg.h>
 
