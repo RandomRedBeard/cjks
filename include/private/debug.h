@@ -2,6 +2,7 @@
 #define CJKS_DEBUG_H
 
 #include <stdio.h>
+#include <cjks/base64.h>
 #include <cjks/utl.h>
 
 /**

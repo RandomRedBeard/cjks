@@ -1,3 +1,4 @@
+#define NOCRYPT
 #include <time.h>
 #include <cjks/cjks.h>
 #include <openssl/x509.h>

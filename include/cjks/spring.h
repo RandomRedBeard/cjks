@@ -5,6 +5,8 @@
 #include <openssl/ossl_typ.h>
 #include <openssl/err.h>
 #include <cjks/utl.h>
+#include <cjks/base64.h>
+#include <cjks/hex.h>
 #include <cjks/bits.h>
 #include <cjks/lib.h>
 #include <cjks/cjks.h>
