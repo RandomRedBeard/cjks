@@ -165,6 +165,7 @@ int cjks_b64decode(uchar* dest, const uchar* src, size_t len) {
         cjks_b64_free(b);
         return -1;
     }
+    cjks_b64_free(b);
     return i + j;
 }
 
@@ -181,5 +182,6 @@ int cjks_b64encode(uchar* dest, const uchar* src, size_t len) {
         cjks_b64_free(b);
         return -1;
     }
+    cjks_b64_free(b);
     return i + j;
 }
