@@ -62,6 +62,7 @@ int do_encrypt(EVP_PKEY* pk, const uchar* data, size_t len, uchar* dbuf) {
     i += cjks_b64_update(b64, iv, 16, dbuf + i);
     i += cjks_b64_update(b64, edata, elen, dbuf + i);
     i += cjks_b64_final(b64, dbuf + i);
+    cjks_b64_free(b64);
 
     return i;
 }
