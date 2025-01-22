@@ -120,3 +120,43 @@ void cjks_sha1_cmpl(cjks_sha1_t* hs, uint32 v[5]) {
         v[i] = cjks_ntohi(hs->h[i]);
     }
 }
+
+
+int cjks_sha1(void* out, int n, ...) {
+    va_list args;
+    va_start(args, n);
+    int r = cjks_vsha1(out, n, args);
+    va_end(args);
+    return r;
+}
+
+int cjks_vsha1(void *out, int n, va_list args) {
+    uint32 olen;
+    cjks_sha1_t* sh = cjks_sha1_new();
+    void *d = NULL;
+    size_t len;
+
+    for (int i = 0; i < n; i++) {
+        d = va_arg(args, void *);
+        len = va_arg(args, size_t);
+
+        cjks_sha1_cnsm(sh, d, len);
+    }
+
+    cjks_sha1_cmpl(sh, out);
+    cjks_sha1_free(sh);
+
+    return olen;
+}
+
+int cjks_sha1_cmp(const void* sha1, int n, ...) {
+    uchar sha2[SHA_DIGEST_LENGTH];
+    va_list args;
+    va_start(args, n);
+    if (cjks_vsha1(sha2, n, args) < 0) {
+        va_end(args);
+        return -1;
+    }
+    va_end(args);
+    return memcmp(sha1, sha2, SHA_DIGEST_LENGTH) == 0;
+}
