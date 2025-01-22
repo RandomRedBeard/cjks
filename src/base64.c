@@ -70,7 +70,7 @@ int cjks_b64_encode_final(cjks_b64_t* b, void* dst) {
 int cjks_b64_decode_update(cjks_b64_t* b, const void* src, size_t len, void* dst) {
     const uchar* psrc = src, * psrce = psrc + len;
     uchar* dptr = dst, cp;
-    uint32 index;
+    int index;
 
     while (psrc != psrce) {
         if (*psrc == '\n' || *psrc == '\r') {
@@ -94,7 +94,7 @@ int cjks_b64_decode_update(cjks_b64_t* b, const void* src, size_t len, void* dst
             if (index < 0) {
                 return -1;
             }
-            b->b |= (int)index << (2 + (6 * (4 - b->i++)));
+            b->b |= index << (2 + (6 * (4 - b->i++)));
         }
 
         psrc++;
