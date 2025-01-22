@@ -12,4 +12,5 @@ int main() {
     int i = cjks_b64_update(b, src1, sizeof(src1) - 1, dest);
     i += cjks_b64_update(b, src2, sizeof(src2) - 1, dest + i);
     printf("%.*s\n", i, dest);
+    cjks_b64_free(b);
 }
