@@ -10,18 +10,6 @@
 #include <cjks/lib.h>
 #include <cjks/bits.h>
 
-static const char CJKS_HEX_CHARS[] = "0123456789abcdef";
-
-/**
- * @brief bin2hex. src and dest cannot overlap
- * 
- * @param dest 
- * @param src 
- * @param len 
- * @return int 
- */
-CJKS_DLL int cjks_hex(char *dest, const uchar *src, size_t len);
-
 CJKS_DLL int cjks_sha1(void* out, int n, ...);
 CJKS_DLL int cjks_vsha1(void* out, int n, va_list args);
 CJKS_DLL int cjks_sha1_cmp(const void* sha1, int n, ...);

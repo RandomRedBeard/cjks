@@ -2,6 +2,8 @@
 #define CJKS_BASE64_H
 
 #include <stddef.h>
+#include <string.h>
+
 #include <cjks/bits.h>
 #include <cjks/lib.h>
 

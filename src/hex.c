@@ -1,7 +1,7 @@
 #include "cjks/hex.h"
 
 char cjks_v2a(int c) {
-    return cjks_hex_chars[c];
+    return CJKS_HEX_CHARS[c];
 }
 
 int cjks_hex(char *dest, const uchar *src, size_t len) {
