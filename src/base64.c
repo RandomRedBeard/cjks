@@ -98,7 +98,7 @@ int cjks_b64encode(uchar* dest, const uchar* src, size_t len) {
         src += cp;
         l = cjks_htoni(l);
         for (j = 0; j < cp + 1; j++) {
-            *dptr++ = cjks_base64_chars[l >> 26];
+            *dptr++ = CJKS_BASE64_CHARS[l >> 26];
             l = l << 6;
         }
 

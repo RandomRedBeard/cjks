@@ -1,10 +1,11 @@
 #ifndef CJKS_BASE64_H
 #define CJKS_BASE64_H
 
+#include <stddef.h>
 #include <cjks/bits.h>
 #include <cjks/lib.h>
 
-static const char cjks_base64_chars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+static const char CJKS_BASE64_CHARS[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 CJKS_DLL char cjks_b64i(char c);
 CJKS_DLL int cjks_b64decode(uchar *dest, const uchar *src, size_t len);

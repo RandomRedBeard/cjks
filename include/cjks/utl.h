@@ -11,18 +11,6 @@
 #include <cjks/bits.h>
 
 static const char CJKS_HEX_CHARS[] = "0123456789abcdef";
-static const char CJKS_BASE64_CHARS[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-
-CJKS_DLL int cjks_b64decode(uchar *dest, const uchar *src, size_t len);
-
-/**
- * @brief b64 encode. src and dest cannot overlap
- * 
- * @param dest 
- * @param src 
- * @param len 
- */
-CJKS_DLL int cjks_b64encode(uchar *dest, const uchar *src, size_t len);
 
 /**
  * @brief bin2hex. src and dest cannot overlap
