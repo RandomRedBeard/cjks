@@ -131,7 +131,6 @@ int cjks_sha1(void* out, int n, ...) {
 }
 
 int cjks_vsha1(void *out, int n, va_list args) {
-    uint32 olen;
     cjks_sha1_t* sh = cjks_sha1_new();
     void *d = NULL;
     size_t len;
@@ -146,7 +145,7 @@ int cjks_vsha1(void *out, int n, va_list args) {
     cjks_sha1_cmpl(sh, out);
     cjks_sha1_free(sh);
 
-    return olen;
+    return SHA_DIGEST_LENGTH;
 }
 
 int cjks_sha1_cmp(const void* sha1, int n, ...) {
