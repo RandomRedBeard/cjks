@@ -109,6 +109,7 @@ if (${CJKS_TEST})
 endif()
 
 add_executable(cjkstool ${CMAKE_CURRENT_SOURCE_DIR}/cli/cjks.c)
+set_target_properties(cjkstool PROPERTIES OUTPUT_NAME cjks)
 target_link_libraries(cjkstool ${CJKS_LINKS} cjks)
 
 # INSTALL Section
