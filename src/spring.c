@@ -1,15 +1,14 @@
 #include "cjks/spring.h"
 
 int cjks_spring_decrypt(EVP_PKEY *pkey, uchar *src, size_t slen, uchar* dst) {
-    uchar salt[] = { 0xde, 0xad, 0xbe, 0xef };
-    uchar *strptr = src, *dstr = dst, key[256], keybuf[32];
+    uchar *strptr = src, *dstr = dst, key[512], keybuf[32];
     char keyhex[32];
     int dstrlen, keyhexsz, dlen;
     uint16 keylen;
     size_t keysz = sizeof(key);
 
-    EVP_PKEY_CTX *evp_ctx = NULL;
-    EVP_CIPHER_CTX *cipher = NULL;
+    EVP_PKEY_CTX *evp_ctx = EVP_PKEY_CTX_new(pkey, NULL);;
+    EVP_CIPHER_CTX *cipher = EVP_CIPHER_CTX_new();
 
     if ((dlen = cjks_b64decode(src, src, slen)) < 0) {
         goto error;
@@ -17,7 +16,6 @@ int cjks_spring_decrypt(EVP_PKEY *pkey, uchar *src, size_t slen, uchar* dst) {
     keylen = cjks_ntohs(*(uint16*)strptr);
     strptr += 2;
 
-    evp_ctx = EVP_PKEY_CTX_new(pkey, NULL);
     EVP_PKEY_decrypt_init(evp_ctx);
     if (!EVP_PKEY_decrypt(evp_ctx, key, &keysz, strptr, keylen)) {
         goto error;
@@ -25,11 +23,10 @@ int cjks_spring_decrypt(EVP_PKEY *pkey, uchar *src, size_t slen, uchar* dst) {
     strptr += keylen;
 
     keyhexsz = cjks_hex(keyhex, key, keysz);
-    if (!PKCS5_PBKDF2_HMAC_SHA1(keyhex, keyhexsz, salt, sizeof(salt), 1024, 32, keybuf)) {
+    if (!PKCS5_PBKDF2_HMAC_SHA1(keyhex, keyhexsz, CJKS_SPRING_SALT, sizeof(CJKS_SPRING_SALT), 1024, 32, keybuf)) {
         goto error;
     }
 
-    cipher = EVP_CIPHER_CTX_new();
     if (!EVP_DecryptInit(cipher, EVP_aes_256_cbc(), keybuf, strptr)) {
         goto error;
     }

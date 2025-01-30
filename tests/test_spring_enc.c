@@ -10,14 +10,14 @@
 int cjks_spring_encrypt(EVP_PKEY* pk, const uchar* src, size_t len, uchar* dst) {
     uchar key[16];
     uchar iv[16];
-    uchar ekey[256];
+    uchar ekey[512];
     EVP_PKEY_CTX* evp_ctx = EVP_PKEY_CTX_new(pk, NULL);
-    size_t ekey_len; // len
+    size_t ekey_len = sizeof(ekey); // len
     char keyhex[32]; // hex
     uchar keybuf[32]; // kdf
-    EVP_CIPHER_CTX* cipher; // CBC
+    EVP_CIPHER_CTX* cipher = EVP_CIPHER_CTX_new(); // CBC
     const uchar* esrc = src + len;
-    uchar buf[32];
+    uchar buf[4096];
     int buflen;
     ushort nkl;
     int keyhexsz;
@@ -30,7 +30,6 @@ int cjks_spring_encrypt(EVP_PKEY* pk, const uchar* src, size_t len, uchar* dst) 
     keyhexsz = cjks_hex(keyhex, key, 16);
 
     PKCS5_PBKDF2_HMAC_SHA1(keyhex, keyhexsz, CJKS_SPRING_SALT, sizeof(CJKS_SPRING_SALT), 1024, 32, keybuf);
-    cipher = EVP_CIPHER_CTX_new();
     EVP_EncryptInit(cipher, EVP_aes_256_cbc(), keybuf, iv);
 
     // Encrypt Key
@@ -74,6 +73,8 @@ cleanup:
     return i;
 }
 
+#include <openssl/pem.h>
+
 void test_spring_enc() {
     cjks_buf pk_buf = CJKS_BUF_INIT;
     cjks_read_from_res("/d.key", &pk_buf);
@@ -94,6 +95,23 @@ void test_spring_enc() {
     printf("Config: %.*s\n", b64_len, b64_dbuf);
 }
 
+void test_lkey() {
+    FILE* fp = cjks_fp_from_res("/test.key");
+    EVP_PKEY* pk = PEM_read_PrivateKey(fp, NULL, NULL, NULL);
+    int sz = EVP_PKEY_size(pk);
+    printf("pk size %d\n", sz);
+
+    const char c[] = "hello this is thomas from your cars extended warranty";
+    char b64_dbuf[4096];
+    int b64_len = cjks_spring_encrypt(pk, c, sizeof(c) - 1, b64_dbuf);
+    puts("test");
+    printf("Config: %.*s\n", b64_len, b64_dbuf);
+
+    b64_len = cjks_spring_decrypt(pk, b64_dbuf, b64_len, b64_dbuf);
+    printf("Config: %.*s\n", b64_len, b64_dbuf);
+}
+
 CJKS_TESTS_ST
 CJKS_TEST(test_spring_enc)
+CJKS_TEST(test_lkey)
 CJKS_TESTS_END
