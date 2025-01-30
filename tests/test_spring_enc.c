@@ -10,7 +10,7 @@
 int cjks_spring_encrypt(EVP_PKEY* pk, const uchar* src, size_t len, uchar* dst) {
     uchar key[16];
     uchar iv[16];
-    uchar ekey[512];
+    uchar* ekey = NULL;
     EVP_PKEY_CTX* evp_ctx = EVP_PKEY_CTX_new(pk, NULL);
     size_t ekey_len = sizeof(ekey); // len
     char keyhex[32]; // hex
@@ -34,6 +34,8 @@ int cjks_spring_encrypt(EVP_PKEY* pk, const uchar* src, size_t len, uchar* dst) 
 
     // Encrypt Key
     EVP_PKEY_encrypt_init(evp_ctx);
+    ekey_len = EVP_PKEY_get_size(pk);
+    ekey = malloc(ekey_len);
     EVP_PKEY_encrypt(evp_ctx, ekey, &ekey_len, key, sizeof(key));
 
     // Prep for encoding
@@ -68,6 +70,10 @@ cleanup:
 
     if (b64) {
         cjks_b64_free(b64);
+    }
+
+    if (ekey) {
+        free(ekey);
     }
 
     return i;

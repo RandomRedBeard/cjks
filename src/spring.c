@@ -1,7 +1,7 @@
 #include "cjks/spring.h"
 
 int cjks_spring_decrypt(EVP_PKEY *pkey, uchar *src, size_t slen, uchar* dst) {
-    uchar *strptr = src, *dstr = dst, key[512], keybuf[32];
+    uchar *strptr = src, *dstr = dst, *key, keybuf[32];
     char keyhex[32];
     int dstrlen, keyhexsz, dlen;
     uint16 keylen;
@@ -17,6 +17,8 @@ int cjks_spring_decrypt(EVP_PKEY *pkey, uchar *src, size_t slen, uchar* dst) {
     strptr += 2;
 
     EVP_PKEY_decrypt_init(evp_ctx);
+    keysz = EVP_PKEY_get_size(pkey);
+    key = malloc(keysz);
     if (!EVP_PKEY_decrypt(evp_ctx, key, &keysz, strptr, keylen)) {
         goto error;
     }
@@ -43,6 +45,7 @@ int cjks_spring_decrypt(EVP_PKEY *pkey, uchar *src, size_t slen, uchar* dst) {
     }
     dstr += dstrlen;
 
+    free(key);
     EVP_PKEY_CTX_free(evp_ctx);
     EVP_CIPHER_CTX_free(cipher);
 
@@ -55,6 +58,9 @@ error:
     }
     if (cipher) {
         EVP_CIPHER_CTX_free(cipher);
+    }
+    if (key) {
+        free(key);
     }
     return -1;
 
