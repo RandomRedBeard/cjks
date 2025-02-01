@@ -5,8 +5,7 @@ int cjks_spring_decrypt(EVP_PKEY *pkey, uchar *src, size_t slen, uchar* dst) {
     char keyhex[32];
     int dstrlen, keyhexsz, dlen;
     uint16 keylen;
-    size_t keysz = sizeof(key);
-
+    size_t keysz;
     EVP_PKEY_CTX *evp_ctx = EVP_PKEY_CTX_new(pkey, NULL);;
     EVP_CIPHER_CTX *cipher = EVP_CIPHER_CTX_new();
 
@@ -74,6 +73,78 @@ int cjks_spring_decrypt2(cjks* jks, uchar *src, size_t slen, uchar* dst) {
 
     int i = cjks_spring_decrypt(pk, src, slen, dst);
     EVP_PKEY_free(pk);
+
+    return i;
+}
+
+int cjks_spring_encrypt(EVP_PKEY* pk, const uchar* src, size_t len, uchar* dst) {
+    uchar key[16];
+    uchar iv[16];
+    uchar* ekey = NULL;
+    EVP_PKEY_CTX* evp_ctx = EVP_PKEY_CTX_new(pk, NULL);
+    size_t ekey_len = sizeof(ekey); // len
+    char keyhex[32]; // hex
+    uchar keybuf[32]; // kdf
+    EVP_CIPHER_CTX* cipher = EVP_CIPHER_CTX_new(); // CBC
+    const uchar* esrc = src + len;
+    uchar buf[4096];
+    int buflen;
+    uint16 nkl;
+    int keyhexsz;
+    int i = 0;
+    cjks_b64_t* b64 = cjks_b64_encoder();
+
+    // Initialize
+    RAND_priv_bytes(key, 16);
+    RAND_bytes(iv, 16);
+    keyhexsz = cjks_hex(keyhex, key, 16);
+
+    PKCS5_PBKDF2_HMAC_SHA1(keyhex, keyhexsz, CJKS_SPRING_SALT, sizeof(CJKS_SPRING_SALT), 1024, 32, keybuf);
+    EVP_EncryptInit(cipher, EVP_aes_256_cbc(), keybuf, iv);
+
+    // Encrypt Key
+    EVP_PKEY_encrypt_init(evp_ctx);
+    ekey_len = EVP_PKEY_get_size(pk);
+    ekey = malloc(ekey_len);
+    EVP_PKEY_encrypt(evp_ctx, ekey, &ekey_len, key, sizeof(key));
+
+    // Prep for encoding
+    nkl = cjks_htons((uint16)ekey_len);
+    i = cjks_b64_update(b64, &nkl, 2, dst);
+    i += cjks_b64_update(b64, ekey, ekey_len, dst + i);
+    i += cjks_b64_update(b64, iv, sizeof(iv), dst + i);
+
+    // Encrypt and Encode data
+    while (src != esrc) {
+        int clen = esrc - src;
+        if (clen > sizeof(buf)) {
+            clen = sizeof(buf);
+        }
+        int l = EVP_EncryptUpdate(cipher, buf, &buflen, src, clen);
+        i += cjks_b64_update(b64, buf, buflen, dst + i);
+        src += clen;
+    }
+
+    EVP_EncryptFinal(cipher, buf, &buflen);
+    i += cjks_b64_update(b64, buf, buflen, dst + i);
+    i += cjks_b64_final(b64, dst + i);
+
+cleanup:
+    if (evp_ctx) {
+        EVP_PKEY_CTX_free(evp_ctx);
+    }
+
+    if (cipher) {
+        EVP_CIPHER_CTX_free(cipher);
+    }
+
+    if (b64) {
+        cjks_b64_free(b64);
+    }
+
+    if (ekey) {
+        free(ekey);
+    }
 
     return i;
 }
