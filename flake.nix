@@ -20,11 +20,11 @@
           nativeBuildInputs = [
             pkgs.clang
             pkgs.cmake
+            pkgs.valgrind
           ];
 
           buildInputs = [
             pkgs.openssl
-            pkgs.valgrind
           ];
 
           doCheck = true; # Enable the checkPhase
