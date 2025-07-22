@@ -10,7 +10,11 @@
 #include <cjks/lib.h>
 #include <cjks/cjks.h>
 
-CJKS_DLL int cjks_spring_decrypt(EVP_PKEY *pkey, uchar *src, size_t slen, uchar* dst);
-CJKS_DLL int cjks_spring_decrypt2(cjks* jks, uchar *src, size_t slen, uchar* dst);
+static const uchar CJKS_SPRING_SALT[] = { 0xde, 0xad, 0xbe, 0xef };
+
+CJKS_DLL int cjks_spring_decrypt(EVP_PKEY* pkey, uchar* src, size_t slen, uchar* dst);
+CJKS_DLL int cjks_spring_decrypt2(cjks* jks, uchar* src, size_t slen, uchar* dst);
+
+CJKS_DLL int cjks_spring_encrypt(EVP_PKEY* pkey, const uchar* src, size_t len, uchar* dst);
 
 #endif

@@ -18,7 +18,7 @@
 #define CJKS_PRIVATE_KEY_TAG 1
 #define CJKS_TRUSTED_CERT_TAG 2
 
-static const uint32 JKS_MAGIC_NUMBER = 0XEDFEEDFE;
+static const uchar JKS_MAGIC_NUMBER[] = {0xFE, 0xED, 0xFE, 0xED};
 static const uchar SUN_JKS_ALGO_ID[] = { 43,6,1,4,1,42,2,17,1,1 };
 static const uchar CJKS_SIGWHITE[] = "Mighty Aphrodite";
 

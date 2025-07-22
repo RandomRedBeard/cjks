@@ -64,13 +64,13 @@ typedef struct {
 
 static void cjks_run_tests(test_st* tests) {
     memcheckinit
-        while (tests->name) {
-            printf("Running test %s\n", tests->name);
-            tests->test();
-            memcheckfin
-                printf("Test completed %s\n", tests->name);
-            tests++;
-        }
+    while (tests->name) {
+        printf("Running test %s\n", tests->name);
+        tests->test();
+        memcheckfin
+        printf("Test completed %s\n", tests->name);
+        tests++;
+    }
 }
 
 #define CJKS_TESTS_ST test_st tests[] = {
