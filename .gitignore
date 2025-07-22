@@ -58,3 +58,7 @@ dkms.conf
 *build
 *.sh
 notes
+
+result
+.direnv
+.envrc
