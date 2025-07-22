@@ -12,7 +12,7 @@
 #include <cjks/lib.h>
 #include <cjks/io.h>
 #include <cjks/bits.h>
-#include <cjks/utl.h>
+#include <cjks/base64.h>
 #include <cjks/sha1io.h>
 
 #define CJKS_PRIVATE_KEY_TAG 1

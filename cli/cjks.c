@@ -1,3 +1,4 @@
+#define NOCRYPT
 #include <time.h>
 #define NOCRYPT
 #include <cjks/cjks.h>

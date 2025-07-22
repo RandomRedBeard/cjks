@@ -2,7 +2,8 @@
 #define CJKS_DEBUG_H
 
 #include <stdio.h>
-#include <cjks/utl.h>
+#include <cjks/base64.h>
+#include <cjks/hex.h>
 
 /**
  * @brief Print bytes as they exist in memory
