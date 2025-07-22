@@ -1,3 +1,6 @@
+#define NOCRYPT
+#include <time.h>
+
 #include <openssl/pem.h>
 
 #include <cjks/spring.h>
