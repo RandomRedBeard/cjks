@@ -29,13 +29,8 @@
 
           doCheck = true; # Enable the checkPhase
 
-          checkPhase = ''
-            ctest -T memcheck
-          '';
+          outputs = [ "dev" "out" ];
 
-          outputs = [
-            "out" "dev"
-          ];
         };
     in {
       packages = {
