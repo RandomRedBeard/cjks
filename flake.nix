@@ -12,12 +12,29 @@
       cjks = pkgs.stdenv.mkDerivation {
           name = "cjks";
           src = ./.;
+
+          cmakeFlags = [
+            "-DCJKS_TEST=1"
+          ];
+
           nativeBuildInputs = [
             pkgs.clang
             pkgs.cmake
           ];
+
           buildInputs = [
             pkgs.openssl
+            pkgs.valgrind
+          ];
+
+          doCheck = true; # Enable the checkPhase
+
+          checkPhase = ''
+            ctest -T memcheck
+          '';
+
+          outputs = [
+            "out" "dev"
           ];
         };
     in {
@@ -28,6 +45,9 @@
         default = pkgs.mkShell {
           inputsFrom = [cjks];
         };
+      };
+      checks = {
+        inherit cjks;
       };
     }
   );
