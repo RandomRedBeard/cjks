@@ -130,7 +130,7 @@ install(
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/cjks
 )
 
-install(EXPORT cjks_targets FILE cjksConfig.cmake DESTINATION lib/cjks)
+install(EXPORT cjks_targets FILE cjksConfig.cmake DESTINATION lib/cmake/cjks)
 
 if (NOT TARGET uninstall)
     configure_file(
